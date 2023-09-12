@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+
+from users.models import CustomUser
 
 class Genre(models.Model):
     name = models.CharField(max_length=100)
@@ -23,6 +26,9 @@ class Book(models.Model):
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)])
+    likes = models.ManyToManyField(CustomUser, blank=True)
+    body = models.TextField("Book description")
+
     
     def __str__(self):
         return self.title
