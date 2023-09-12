@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-^k65j4g9968cf9hhc#c$6f+50a!gzsm7wm%=bwl&+*(#@g5^ih
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # for CORS
+
+CORS_ORIGIN_ALLOW_ALL = True # for CORS
 
 
 # Application definition
@@ -40,9 +42,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'books.apps.BooksConfig',
     'cart.apps.CartConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
