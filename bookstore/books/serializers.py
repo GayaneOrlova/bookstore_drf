@@ -12,7 +12,7 @@ class BookSerializer(serializers.ModelSerializer):
     available = serializers.BooleanField(default=True)
     image = serializers.ImageField()
     rating = serializers.IntegerField()
-    # likes = serializers.BooleanField(default=False)
+    likes = serializers.BooleanField(default=False)
     
     class Meta:
         model = Book
