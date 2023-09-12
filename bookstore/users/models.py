@@ -18,7 +18,7 @@ class CustomUser(AbstractUser):
         return self.email
 
 def get_image_filename(instance, filename):
-    name = instance.product.name
+    name = instance
     slug = slugify(name)
     return f"books/{slug}-{filename}"
 
