@@ -25,6 +25,7 @@ from books.views import BookViewSet
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('books/', BookViewSet.as_view({'get': 'list'})),
+    # path("books/", include("books.urls", namespace="books")),
     path('book/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
     # path('login', UserLogin.as_view(),)
     path("", include("users.urls", namespace="users")),

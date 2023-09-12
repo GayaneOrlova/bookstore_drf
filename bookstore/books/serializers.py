@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from books.models import Book
 from books.models import Genre
+from books.models import Comment
 
 class BookSerializer(serializers.ModelSerializer):
     title=serializers.CharField()
@@ -24,3 +25,16 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class AuthorSerializer(serializers.ModelSerializer):
     name=serializers.CharField()
+
+class CommentReadSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source="author.username", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
+
+class CommentWriteSerializer(serializers.ModelSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Comment
+        fields = "__all__"

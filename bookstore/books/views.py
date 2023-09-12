@@ -1,10 +1,17 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+from rest_framework import permissions, status, viewsets
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from books.serializers import BookSerializer
+
+from books.permissions import IsAuthorOrReadOnly
 
 from books.models import Book
 from books.models import Genre
+from books.models import Comment
+from books.serializers import CommentReadSerializer, CommentWriteSerializer
 from rest_framework import viewsets
 from books.serializers import GenreSerializer
 from books.models import Author
@@ -34,6 +41,7 @@ class BookViewSet(viewsets.ViewSet):
 class GenreListAPIView(ListCreateAPIView):
     queryset=Genre.objects.all()
     serializer_class=GenreSerializer
+    permission_classes = (permissions.AllowAny,)
     
     # def get(self, request):
     #     genres=Genre.objects.all()
@@ -43,3 +51,51 @@ class GenreListAPIView(ListCreateAPIView):
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()
     serializer_class=AuthorSerializer
+    
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    CRUD comments for a particular post
+    """
+
+    queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        res = super().get_queryset()
+        book_id = self.kwargs.get("book_id")
+        return res.filter(book__id=book_id)
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return CommentWriteSerializer
+
+        return CommentReadSerializer
+
+    def get_permissions(self):
+        if self.action in ("create",):
+            self.permission_classes = (permissions.IsAuthenticated,)
+        elif self.action in ("update", "partial_update", "destroy"):
+            self.permission_classes = (IsAuthorOrReadOnly,)
+        else:
+            self.permission_classes = (permissions.AllowAny,)
+
+        return super().get_permissions()
+
+# Here, we are using the normal APIView class
+class LikeBookAPIView(APIView):
+    """
+    Like, Dislike a post
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+        book = get_object_or_404(Book, pk=pk)
+
+        if user in book.likes.all():
+            book.likes.remove(user)
+
+        else:
+            book.likes.add(user)
+
+        return Response(status=status.HTTP_200_OK)

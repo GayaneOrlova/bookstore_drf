@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
 def get_image_filename(instance, filename):
     name = instance.product.name
     slug = slugify(name)
-    return f"products/{slug}-{filename}"
+    return f"books/{slug}-{filename}"
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
