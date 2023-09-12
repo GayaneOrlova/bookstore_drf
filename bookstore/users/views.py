@@ -41,7 +41,7 @@ class UserLoginAPIView(GenericAPIView):
         user = serializer.validated_data
         serializer = serializers.CustomUserSerializer(user)
         token = RefreshToken.for_user(user)
-        data = serializer.data
+        data = {"user": serializer.data}
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
         return Response(data, status=status.HTTP_200_OK)
 
