@@ -9,6 +9,8 @@ from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
 import os
+
+# from users.serializers import PasswordChangeSerializer
 from .managers import CustomUserManager
 
 class CustomUser(AbstractUser):
@@ -39,11 +41,34 @@ class ChangePasswordView(APIView):
 
         if not user.check_password(password):
             return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         user.set_password(new_password)
         user.save()
 
         return Response({'success': 'Password changed successfully'}, status=status.HTTP_200_OK)
+
+
+    # def post(self, request):
+    #     serializer = PasswordChangeSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+        
+    #     password = request.data.get('password')
+    #     new_password = serializer.validated_data['new_password']
+    #     confirm_password = serializer.validated_data['confirm_password']
+        
+    #     if new_password != confirm_password:
+    #         return Response({'error': 'Passwords do not match'}, status=400)
+        
+    #     user = request.user
+    #     user.set_password(new_password)
+    #     user.save()
+        
+    #     return Response({'message': 'Password changed successfully'})
+
+
+
+
+
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
