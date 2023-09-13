@@ -1,4 +1,9 @@
 from django.contrib.auth.models import AbstractUser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
@@ -21,6 +26,24 @@ def get_image_filename(instance, filename):
     name = instance
     slug = slugify(name)
     return f"books/{slug}-{filename}"
+
+class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request):
+        user = request.user
+        password = request.data.get('password')
+        new_password = request.data.get('new_password')
+        new_password_confirm = request.data.get('new_password_confirm')
+
+
+        if not user.check_password(password):
+            return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'success': 'Password changed successfully'}, status=status.HTTP_200_OK)
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
