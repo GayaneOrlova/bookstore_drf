@@ -22,9 +22,8 @@ from django.conf.urls.static import static
 
 from books.views import BookViewSet
 from books.views import GenreListAPIView
-from books import views
-from books.views import GenreViewSet
 from books.views import AuthorListAPIView
+from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,4 +35,5 @@ urlpatterns = [
 
     # path('login', UserLogin.as_view(),)
     path("", include("users.urls", namespace="users")),
+    path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
