@@ -21,12 +21,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from books.views import BookViewSet
+from books.views import GenreListAPIView
+from books import views
+from books.views import GenreViewSet
+from books.views import AuthorListAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('books/', BookViewSet.as_view({'get': 'list'})),
     # path("books/", include("books.urls", namespace="books")),
     path('book/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
+    path('author/', AuthorListAPIView.as_view(), name='author-list'),
+    path('genres/', GenreListAPIView.as_view(), name='genre-list'),
+
     # path('login', UserLogin.as_view(),)
     path("", include("users.urls", namespace="users")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

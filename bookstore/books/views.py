@@ -1,5 +1,6 @@
+from django.http import Http404
 from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.http import Http404
 from rest_framework import permissions, status, viewsets
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
@@ -37,16 +38,37 @@ class BookViewSet(viewsets.ViewSet):
         book=Book.objects.get(pk=pk) #сделать возврат пустого ответа -нет такой книги
         serializer=BookSerializer(book)
         return Response(serializer.data)
-        
+
+
+# class BookDetail(APIView):
+#     def get_object(self, pk):
+#         try:
+#             return Book.objects.get(pk=pk)
+#         except Book.DoesNotExist:
+#             raise Http404
+
+#     def get(self, request, pk, format=None):
+#         book = self.get_object(pk)
+#         serializer = BookSerializer(book)
+#         return Response(serializer.data)
+
+
 class GenreListAPIView(ListCreateAPIView):
     queryset=Genre.objects.all()
     serializer_class=GenreSerializer
-    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (permissions.AllowAny,)
     
     # def get(self, request):
     #     genres=Genre.objects.all()
     #     genre_list=[genres.name for genre in genres]
     #     return Response(genre_list)
+
+class GenreViewSet(viewsets.ViewSet):
+    def list(self, request):
+        genre=Genre.objects.all()
+        serializer=GenreSerializer(genre, many=True)
+        return Response(serializer.data)
+
 
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()

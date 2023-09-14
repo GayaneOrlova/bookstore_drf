@@ -22,6 +22,9 @@ class BookSerializer(serializers.ModelSerializer):
         
 class GenreSerializer(serializers.ModelSerializer):
     name=serializers.CharField()
+    class Meta:
+        model = Genre
+        fields = "__all__"
 
 class AuthorSerializer(serializers.ModelSerializer):
     name=serializers.CharField()
