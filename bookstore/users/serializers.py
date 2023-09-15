@@ -6,7 +6,7 @@ from .models import CustomUser, Profile
 class CustomUserSerializer(serializers.ModelSerializer):
     """
     Serializer class to serialize CustomUser model.
-    """
+    """ 
 
     class Meta:
         model = CustomUser
