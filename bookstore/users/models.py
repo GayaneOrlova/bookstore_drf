@@ -33,25 +33,6 @@ def get_image_filename(instance, filename):
     slug = slugify(name)
     return f"books/{slug}-{filename}"
 
-class ChangePasswordView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def put(self, request):
-        user = request.user
-        password = request.data.get('password')
-        new_password = request.data.get('new_password')
-        new_password_confirm = request.data.get('new_password_confirm')
-
-
-        if not user.check_password(password):
-            return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user.set_password(new_password)
-        user.save()
-
-        return Response({'success': 'Password changed successfully'}, status=status.HTTP_200_OK)
-
-
     # def post(self, request):
     #     serializer = PasswordChangeSerializer(data=request.data)
     #     serializer.is_valid(raise_exception=True)

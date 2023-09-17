@@ -84,3 +84,36 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
 
 #     def get_object(self):
 #         return self.request.user.profile
+
+
+# new
+from .serializers import ChangePasswordSerializer
+from rest_framework.views import APIView
+
+class ChangePasswordView(APIView):
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.update(request.user, serializer.validated_data)
+            return Response({'message': 'Password changed successfully'})
+        return Response(serializer.errors)
+
+
+
+# class ChangePasswordView(APIView):
+#     permission_classes = (IsAuthenticated,)
+
+#     def put(self, request):
+#         user = request.user
+#         password = request.data.get('password')
+#         new_password = request.data.get('new_password')
+#         new_password_confirm = request.data.get('new_password_confirm')
+
+
+#         if not user.check_password(password):
+#             return Response({'error': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         user.set_password(new_password)
+#         user.save()
+
+#         return Response({'success': 'Password changed successfully'}, status=status.HTTP_200_OK)

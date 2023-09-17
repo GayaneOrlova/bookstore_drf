@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from users.models import ChangePasswordView
+from users.views import ChangePasswordView
 
 from users import views
 

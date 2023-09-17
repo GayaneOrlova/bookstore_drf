@@ -65,3 +65,23 @@ class ProfileSerializer(CustomUserSerializer):
 # class PasswordChangeSerializer(serializers.Serializer):
 #     new_password = serializers.CharField()
 #     confirm_password = serializers.CharField()
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError("Passwords do not match")
+        
+        if not self.context['request'].user.check_password(data['password']):
+            raise serializers.ValidationError("Incorrect password")
+
+        return data
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['new_password'])
+        instance.save()
+        return instance
