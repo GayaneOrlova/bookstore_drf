@@ -1,28 +1,34 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 
 from .models import CustomUser, Profile
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    """
-    Serializer class to serialize CustomUser model.
-    """ 
-
     class Meta:
         model = CustomUser
         fields = ("id", "username", "email")
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
-    """
-    Serializer class to serialize registration requests and create a new user.
-    """
+    confirm_password = serializers.CharField(max_length=128, write_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "email", "password")
+        fields = ("id", "email", "password", "confirm_password")
         extra_kwargs = {"password": {"write_only": True}}
+        
+    def validate(self, data):
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError("Passwords do not match.")
+        validate_password(data["password"], self.instance)
+        return data
 
     def create(self, validated_data):
+        validated_data.pop("confirm_password")
         return CustomUser.objects.create_user(**validated_data)
+
+    # def create(self, validated_data):
+    #     return CustomUser.objects.create_user(**validated_data)
 
 class UserLoginSerializer(serializers.Serializer):
     """

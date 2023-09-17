@@ -11,10 +11,6 @@ from .models import Profile
 User = get_user_model()
 
 class UserRegisterationAPIView(GenericAPIView):
-    """
-    An endpoint for the client to create a new User.
-    """
-
     permission_classes = (AllowAny,)
     serializer_class = serializers.UserRegisterationSerializer
 
