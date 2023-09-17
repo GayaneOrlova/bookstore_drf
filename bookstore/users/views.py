@@ -59,10 +59,6 @@ class UserLogoutAPIView(GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class UserAPIView(RetrieveUpdateAPIView):
-    """
-    Get, Update user information
-    """
-
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CustomUserSerializer
 
@@ -70,10 +66,6 @@ class UserAPIView(RetrieveUpdateAPIView):
         return self.request.user
 
 class UserProfileAPIView(RetrieveUpdateAPIView):
-    """
-    Get, Update user profile
-    """
-
     queryset = Profile.objects.all()
     serializer_class = serializers.ProfileSerializer
     permission_classes = (IsAuthenticated,)
