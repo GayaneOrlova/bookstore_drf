@@ -51,20 +51,8 @@ class ProfileSerializer(CustomUserSerializer):
 
     class Meta:
         model = Profile
-        fields = ("bio","avatar")
+        fields = ["avatar", "bio"]
 
-# class ProfileAvatarSerializer(serializers.ModelSerializer):
-#     """
-#     Serializer class to serialize the avatar
-#     """
-
-#     class Meta:
-#         model = Profile
-#         fields = (,)
-
-# class PasswordChangeSerializer(serializers.Serializer):
-#     new_password = serializers.CharField()
-#     confirm_password = serializers.CharField()
 
 
 class ChangePasswordSerializer(serializers.Serializer):

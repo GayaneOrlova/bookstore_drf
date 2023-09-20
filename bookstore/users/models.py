@@ -16,6 +16,8 @@ from .managers import CustomUserManager
 class CustomUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     username = models.CharField(max_length=150, blank=True)
+    # bio = models.CharField(max_length=200, blank=True)
+
 
     def __str__(self):
         return self.username
@@ -31,7 +33,7 @@ class CustomUser(AbstractUser):
 def get_image_filename(instance, filename):
     name = instance
     slug = slugify(name)
-    return f"books/{slug}-{filename}"
+    return f"avatars/{slug}-{filename}"
 
     # def post(self, request):
     #     serializer = PasswordChangeSerializer(data=request.data)
@@ -44,7 +46,7 @@ def get_image_filename(instance, filename):
     #     if new_password != confirm_password:
     #         return Response({'error': 'Passwords do not match'}, status=400)
         
-    #     user = request.user
+    #     user = request.user 
     #     user.set_password(new_password)
     #     user.save()
         
@@ -52,12 +54,9 @@ def get_image_filename(instance, filename):
 
 
 
-
-
-
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to=get_image_filename, blank=True)
+    avatar = models.ImageField(upload_to=get_image_filename)
     bio = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
