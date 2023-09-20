@@ -27,6 +27,7 @@ from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #  path('api/', include('users.urls')), 
     path('books/', BookViewSet.as_view({'get': 'list'})),
     # path("books/", include("books.urls", namespace="books")),
     path('book/<pk>', BookViewSet.as_view({'get': 'retrieve'})),

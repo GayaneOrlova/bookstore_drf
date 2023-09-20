@@ -11,7 +11,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(max_length=128, write_only=True)
-
     class Meta:
         model = CustomUser
         fields = ("id", "email", 'username', "password", "confirm_password")
@@ -31,10 +30,6 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
     #     return CustomUser.objects.create_user(**validated_data)
 
 class UserLoginSerializer(serializers.Serializer):
-    """
-    Serializer class to authenticate users with email and password.
-    """
-
     email = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
@@ -44,15 +39,10 @@ class UserLoginSerializer(serializers.Serializer):
             return user
         raise serializers.ValidationError("Incorrect Credentials")
 
-class ProfileSerializer(CustomUserSerializer):
-    """
-    Serializer class to serialize the user Profile model
-    """
-
-    class Meta:
-        model = Profile
-        fields = ["avatar", "bio"]
-
+# class ProfileSerializer(CustomUserSerializer):
+#     class Meta:
+#         model = Profile
+#         fields = '__all__'
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -71,5 +61,21 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         instance.set_password(validated_data['new_password'])
+        instance.save()
+        return instance
+
+
+# class ProfileSerializer(CustomUserSerializer):
+#     class Meta:
+#         model = Profile
+#         fields = ["bio", "avatar"]
+        
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["bio", "avatar"]
+    
+    def update(self, instance, validated_data):
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.save()
         return instance

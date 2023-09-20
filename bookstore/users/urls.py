@@ -2,7 +2,6 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 # from users.views import PhotoUploadView
 from users.views import ChangePasswordView
-
 from users import views
 
 app_name = "users"
@@ -17,5 +16,6 @@ urlpatterns = [
     path("profile/change/", views.UserProfileAPIView.as_view(), name="profile-change"),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path("me/", views.UserAPIView.as_view(), name="tokens"),
+     path('profile-avatar/', views.ProfileView.as_view(), name= 'profiles_list'),
     # path('avatar/upload/', PhotoUploadView.as_view(), name='photo_upload'),
 ]
