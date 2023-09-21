@@ -69,7 +69,7 @@ class UserAPIView(RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-class UserProfileAPIView(RetrieveUpdateAPIView):
+class UserAvatarAPIView(RetrieveUpdateAPIView):
     # parser_classes = (MultiPartParser, FormParser)
     queryset = Avatar.objects.all()
     serializer_class = serializers.AvatarSerializer
