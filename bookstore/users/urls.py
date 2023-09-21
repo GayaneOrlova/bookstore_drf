@@ -13,10 +13,15 @@ urlpatterns = [
     path("logout/", views.UserLogoutAPIView.as_view(), name="logout-user"),
     path("", views.UserAPIView.as_view(), name="user-info"),
     path("me/", views.UserAPIView.as_view(), name="tokens"),
-    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
-    path('change-avatar/<pk>', views.ProfileView.as_view(), name= 'profiles_list'),
+    
+    path("me/", views.UserAPIView.as_view(), name="tokens"),
 
-    path("profile/", views.UserProfileAPIView.as_view(), name="user-profile"),
-    path("profile/change/", views.UserProfileAPIView.as_view(), name="profile-change"),
+    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+    # path('avatar/', views.AvatarView.as_view(), name= 'get_avatar'),
+
+    path('change-avatar/', views.AvatarView.as_view(), name= 'get_avatar'),
+
+    path("avatar/", views.UserProfileAPIView.as_view(), name="user_avatar"),
+    # path("profile/change/", views.UserProfileAPIView.as_view(), name="profile-change"),
     # path('avatar/upload/', PhotoUploadView.as_view(), name='photo_upload'),
 ]

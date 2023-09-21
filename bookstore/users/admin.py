@@ -2,12 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import CustomUser, Profile
+from .models import CustomUser, Avatar
 
-class ProfileInline(admin.StackedInline):
-    model = Profile
+class AvatarInline(admin.StackedInline):
+    model = Avatar
     can_delete = False
-    verbose_name_plural = "Profile"
+    verbose_name_plural = "Avatar"
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
@@ -59,6 +59,6 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ("email",)
     ordering = ("email",)
-    inlines = (ProfileInline,)
+    inlines = (AvatarInline,)
 
-admin.site.register(Profile)
+admin.site.register(Avatar)

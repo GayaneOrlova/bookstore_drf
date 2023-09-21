@@ -2,12 +2,12 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 
-from .models import CustomUser, Profile
+from .models import Avatar, CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "email", "bio")
+        fields = ("id", "username", "email")
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(max_length=128, write_only=True)
@@ -70,9 +70,9 @@ class ChangePasswordSerializer(serializers.Serializer):
 #         model = Profile
 #         fields = ["bio", "avatar"]
         
-class ProfileSerializer(serializers.ModelSerializer):
+class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
+        model = Avatar
         fields = ["avatar"]
     
     def update(self, instance, validated_data):

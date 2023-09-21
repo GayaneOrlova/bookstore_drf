@@ -6,11 +6,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.files.storage import default_storage
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import ChangePasswordSerializer, ProfileSerializer
+from .serializers import AvatarSerializer, ChangePasswordSerializer
 from rest_framework.views import APIView
 
 from . import serializers
-from .models import Profile
+from .models import Avatar
 
 User = get_user_model()
 
@@ -71,12 +71,12 @@ class UserAPIView(RetrieveUpdateAPIView):
 
 class UserProfileAPIView(RetrieveUpdateAPIView):
     # parser_classes = (MultiPartParser, FormParser)
-    queryset = Profile.objects.all()
-    serializer_class = serializers.ProfileSerializer
+    queryset = Avatar.objects.all()
+    serializer_class = serializers.AvatarSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
-        return self.request.user.profile
+        return self.request.user.avatar
 
 # class PhotoUploadView(APIView):
 #     def post(self, request):
@@ -84,24 +84,24 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
 #         filename = default_storage.save(file.name, file)
 #         return Response({'success': True, 'filename': filename})
 
-class ProfileView(APIView):
+class AvatarView(APIView):
     # profiles = Profile.objects.get(user_id = 1)
-    serializer_class = ProfileSerializer
+    serializer_class = AvatarSerializer
     permission_classes = (IsAuthenticated,)
         
     parser_classes = (MultiPartParser, FormParser)
-    def get(self, request, pk):
-        profiles = Profile.objects.get(pk = pk)
-        serializer = ProfileSerializer(profiles)
-        return Response(serializer.data)
+    # def get(self, request):
+    #     avatar = Avatar.objects.get(user=request.user)
+    #     serializer = AvatarSerializer(avatar)
+    #     return Response(serializer.data)
     
-    def patch(self, request, pk):
-        profiles = Profile.objects.get(pk = pk)
+    def patch(self, request):
+        avatar = Avatar.objects.get(user=request.user)
         file_obj = request.FILES['photo']
         new_data = {"avatar": file_obj}
-        serializer = self.serializer_class(profiles, data=new_data)
+        serializer = self.serializer_class(avatar, data=new_data)
         serializer.is_valid()
-        serializer.update(profiles, serializer._validated_data)
+        serializer.update(avatar, serializer._validated_data)
         # if serializer.is_valid():
             # self.perform_update(serializer)
 
