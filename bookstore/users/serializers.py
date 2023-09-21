@@ -7,7 +7,7 @@ from .models import CustomUser, Profile
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "email")
+        fields = ("id", "username", "email", "bio")
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(max_length=128, write_only=True)
@@ -73,7 +73,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ["bio", "avatar"]
+        fields = ["avatar"]
     
     def update(self, instance, validated_data):
         instance.avatar = validated_data.get('avatar', instance.avatar)

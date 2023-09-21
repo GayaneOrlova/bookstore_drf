@@ -85,23 +85,23 @@ class UserProfileAPIView(RetrieveUpdateAPIView):
 #         return Response({'success': True, 'filename': filename})
 
 class ProfileView(APIView):
-    profiles = Profile.objects.get(user_id = 1)
+    # profiles = Profile.objects.get(user_id = 1)
     serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
         
     parser_classes = (MultiPartParser, FormParser)
-    def get(self, request, *args, **kwargs):
-        profiles = Profile.objects.get(user_id = 1)
+    def get(self, request, pk):
+        profiles = Profile.objects.get(pk = pk)
         serializer = ProfileSerializer(profiles)
         return Response(serializer.data)
     
-    def patch(self, request, *args, **kwargs):
-
+    def patch(self, request, pk):
+        profiles = Profile.objects.get(pk = pk)
         file_obj = request.FILES['photo']
         new_data = {"avatar": file_obj}
-        serializer = self.serializer_class(self.profiles, data=new_data)
+        serializer = self.serializer_class(profiles, data=new_data)
         serializer.is_valid()
-        serializer.update(self.profiles, serializer._validated_data)
+        serializer.update(profiles, serializer._validated_data)
         # if serializer.is_valid():
             # self.perform_update(serializer)
 
