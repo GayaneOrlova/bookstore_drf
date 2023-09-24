@@ -25,10 +25,7 @@ class UserRegisterationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("confirm_password")
         return CustomUser.objects.create_user(**validated_data)
-
-    # def create(self, validated_data):
-    #     return CustomUser.objects.create_user(**validated_data)
-
+        
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -38,12 +35,6 @@ class UserLoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Incorrect Credentials")
-
-# class ProfileSerializer(CustomUserSerializer):
-#     class Meta:
-#         model = Profile
-#         fields = '__all__'
-
 
 class ChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
@@ -62,14 +53,8 @@ class ChangePasswordSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.set_password(validated_data['new_password'])
         instance.save()
-        return instance
+        return instance   
 
-
-# class ProfileSerializer(CustomUserSerializer):
-#     class Meta:
-#         model = Profile
-#         fields = ["bio", "avatar"]
-        
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Avatar

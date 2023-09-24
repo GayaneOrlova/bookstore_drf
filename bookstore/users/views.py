@@ -4,7 +4,6 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.core.files.storage import default_storage
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import AvatarSerializer, ChangePasswordSerializer
 from rest_framework.views import APIView
@@ -70,31 +69,17 @@ class UserAPIView(RetrieveUpdateAPIView):
         return self.request.user
 
 class UserAvatarAPIView(RetrieveUpdateAPIView):
-    # parser_classes = (MultiPartParser, FormParser)
     queryset = Avatar.objects.all()
     serializer_class = serializers.AvatarSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return self.request.user.avatar
-
-# class PhotoUploadView(APIView):
-#     def post(self, request):
-#         file = request.FILES['photo']
-#         filename = default_storage.save(file.name, file)
-#         return Response({'success': True, 'filename': filename})
-
 class AvatarView(APIView):
-    # profiles = Profile.objects.get(user_id = 1)
     serializer_class = AvatarSerializer
     permission_classes = (IsAuthenticated,)
-        
     parser_classes = (MultiPartParser, FormParser)
-    # def get(self, request):
-    #     avatar = Avatar.objects.get(user=request.user)
-    #     serializer = AvatarSerializer(avatar)
-    #     return Response(serializer.data)
-    
+   
     def patch(self, request):
         avatar = Avatar.objects.get(user=request.user)
         file_obj = request.FILES['photo']
@@ -102,15 +87,4 @@ class AvatarView(APIView):
         serializer = self.serializer_class(avatar, data=new_data)
         serializer.is_valid()
         serializer.update(avatar, serializer._validated_data)
-        # if serializer.is_valid():
-            # self.perform_update(serializer)
-
         return Response(serializer.data)
-        # profile_serializer = ProfileSerializer(data=new_data)
-        # if profile_serializer.is_valid():
-        #     profile_serializer.save()
-           
-        #     return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
-        # else:
-        #     print('error', profile_serializer.errors)
-        #     return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

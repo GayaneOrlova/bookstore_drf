@@ -1,21 +1,14 @@
 from django.contrib.auth.models import AbstractUser
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
 import os
 
-# from users.serializers import PasswordChangeSerializer
 from .managers import CustomUserManager
 
 class CustomUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
-    # username = models.CharField(max_length=150, blank=True)
     username = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
