@@ -28,6 +28,9 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class AuthorSerializer(serializers.ModelSerializer):
     name=serializers.CharField()
+    class Meta:
+        model = Genre
+        fields = "__all__"
 
 class CommentReadSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source="author.username", read_only=True)

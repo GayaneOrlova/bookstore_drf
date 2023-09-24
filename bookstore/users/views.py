@@ -75,6 +75,7 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.avatar
+        
 class AvatarView(APIView):
     serializer_class = AvatarSerializer
     permission_classes = (IsAuthenticated,)

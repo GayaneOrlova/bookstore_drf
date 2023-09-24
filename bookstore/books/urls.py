@@ -5,8 +5,6 @@ from books.models import Book, Genre
 
 from books.views import CommentViewSet
 from books.views import GenreListAPIView
-from bookstore.books.views import AuthorListAPIView
-
 
 app_name = "books"
 
@@ -17,7 +15,6 @@ router.register(r"", Book)
 
 urlpatterns = [
     path("", include(router.urls)),
-    # path('genre/', GenreListAPIView.as_view(), name='genre-list'),
-    # path('author/', AuthorListAPIView.as_view(), name='author-list'),
+    path('genres/', GenreListAPIView.as_view(), name='genre-list'),
 
 ]

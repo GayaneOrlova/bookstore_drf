@@ -23,15 +23,17 @@ from django.conf.urls.static import static
 from books.views import BookViewSet
 from books.views import GenreListAPIView
 from books.views import AuthorListAPIView
+from books.views import BookListAPIView
 from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #  path('api/', include('users.urls')), 
-    path('books/', BookViewSet.as_view({'get': 'list'})),
+    path('books/', BookListAPIView.as_view(), name='books-list'),
     # path("books/", include("books.urls", namespace="books")),
     path('book/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
-    path('author/', AuthorListAPIView.as_view(), name='author-list'),
+    
+    path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
 
     # path('login', UserLogin.as_view(),)

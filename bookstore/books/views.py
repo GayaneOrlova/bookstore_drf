@@ -1,32 +1,20 @@
-from django.http import Http404
 from django.shortcuts import get_object_or_404, render
-from django.http import Http404
 from rest_framework import permissions, status, viewsets
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from books.serializers import BookSerializer
+from books.models import Author, Book, Comment, Genre
+from books.serializers import AuthorSerializer, BookSerializer, CommentReadSerializer, CommentWriteSerializer, GenreSerializer
+
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 
 from books.permissions import IsAuthorOrReadOnly
-
-from books.models import Book
-from books.models import Genre
-from books.models import Comment
-from books.serializers import CommentReadSerializer, CommentWriteSerializer
-from rest_framework import viewsets
-from books.serializers import GenreSerializer
-from books.models import Author
-from books.serializers import AuthorSerializer
-
+from books import serializers
 
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
 
-    # def get(self, request):
-    #     books=Book.objects.all()
-    #     books_list=[book.title for book in books]
-    #     return Response(books_list)
 
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -38,7 +26,6 @@ class BookViewSet(viewsets.ViewSet):
         book=Book.objects.get(pk=pk) #сделать возврат пустого ответа -нет такой книги
         serializer=BookSerializer(book)
         return Response(serializer.data)
-
 
 # class BookDetail(APIView):
 #     def get_object(self, pk):
@@ -63,23 +50,18 @@ class GenreListAPIView(ListCreateAPIView):
     #     genre_list=[genres.name for genre in genres]
     #     return Response(genre_list)
 
-class GenreViewSet(viewsets.ViewSet):
-    def list(self, request):
-        genre=Genre.objects.all()
-        serializer=GenreSerializer(genre, many=True)
-        return Response(serializer.data)
+# class GenreViewSet(viewsets.ViewSet):
+#     def list(self, request):
+#         genre=Genre.objects.all()
+#         serializer=GenreSerializer(genre, many=True)
+#         return Response(serializer.data)
 
 
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()
     serializer_class=AuthorSerializer
     
-
 class CommentViewSet(viewsets.ModelViewSet):
-    """
-    CRUD comments for a particular post
-    """
-
     queryset = Comment.objects.all()
 
     def get_queryset(self):

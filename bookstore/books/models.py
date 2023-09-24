@@ -18,18 +18,18 @@ class Author(models.Model):
 
 class Book(models.Model):
     title=models.CharField(max_length=255)
-    author=models.ForeignKey(Author, on_delete=models.CASCADE)# поменять на ForeinKey(Author)
+    author=models.ForeignKey(Author, on_delete=models.CASCADE)
     genre=models.ManyToManyField(Genre, blank=True)
     created_at=models.DateField(auto_now_add=True)
     price=models.FloatField()
     available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
+    
     rating = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)])
+        validators=[MinValueValidator(0), MaxValueValidator(5)])
     likes = models.ManyToManyField(CustomUser, blank=True)
     body = models.TextField("Book description")
 
-    
     def __str__(self):
         return self.title
 
