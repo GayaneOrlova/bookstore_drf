@@ -16,15 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import BookViewSet
-from books.views import GenreListAPIView
-from books.views import AuthorListAPIView
-from books.views import BookListAPIView
-from cart.views import CartAPIView
+from books.views import AuthorListAPIView, BookListAPIView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, GenreListAPIView
+from books.views import BookRatingUpdateView
+# from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,8 +32,14 @@ urlpatterns = [
     
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
+    # path('shopping-cart/', CartAPIView.as_view(), name='shopping-cart-retrieve-update'),
 
-    # path('login', UserLogin.as_view(),)
+
     path("", include("users.urls", namespace="users")),
-    path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
+    # path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
+ 
+    path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
+    path('book-ratings/<int:pk>/', BookRatingRetrieveUpdateDestroyView.as_view(), name='book-rating-retrieve-update-destroy'),
+    path('book-ratings/<int:pk>/update/', BookRatingUpdateView.as_view(), name='book-rating-update'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

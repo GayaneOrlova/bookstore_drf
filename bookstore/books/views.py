@@ -3,13 +3,16 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from books.models import Author, Book, Comment, Genre
+from books.models import Author, Book, Comment, Genre, BookRating
 from books.serializers import AuthorSerializer, BookSerializer, CommentReadSerializer, CommentWriteSerializer, GenreSerializer
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, UpdateAPIView
 
 from books.permissions import IsAuthorOrReadOnly
 from books import serializers
+from books.serializers import BookRatingSerializer
+from books.serializers import BookRatingCreateUpdateSerializer
 
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
@@ -87,9 +90,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 # Here, we are using the normal APIView class
 class LikeBookAPIView(APIView):
-    """
-    Like, Dislike a post
-    """
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk):
@@ -103,3 +103,21 @@ class LikeBookAPIView(APIView):
             book.likes.add(user)
 
         return Response(status=status.HTTP_200_OK)
+
+class BookRatingListCreateView(ListCreateAPIView):
+    queryset = BookRating.objects.all()
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return BookRatingCreateUpdateSerializer
+        return BookRatingSerializer
+
+class BookRatingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+    queryset = BookRating.objects.all()
+    serializer_class = BookRatingSerializer
+
+class BookRatingUpdateView(UpdateAPIView):
+    queryset = BookRating.objects.all()
+    serializer_class = BookRatingCreateUpdateSerializer
+
+

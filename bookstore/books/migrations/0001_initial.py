@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=255)),
-                ('created_at', models.DateField(auto_now_add=True)),
+                ('published_at', models.DateField(auto_now_add=True)),
                 ('price', models.FloatField()),
                 ('available', models.BooleanField(default=True)),
                 ('image', models.ImageField(blank=True, upload_to='books/%Y/%m/%d')),
