@@ -49,18 +49,19 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = ['total_price', 'book', 'amount']
+        fields = '__all__'
         # depth = 0
 
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True)
     total_price = serializers.DecimalField(max_digits=5, decimal_places=2)
+    # total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
         fields = '__all__'
     #     depth = 0
 
-    # def get_total_price(self, obj):
-    #     return obj.total_price
+    def get_total_price(self, obj):
+        return obj.total_price
