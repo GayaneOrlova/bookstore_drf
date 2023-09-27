@@ -2,14 +2,17 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
 from books.models import Author, Book, Comment, Genre, BookRating
 from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, GenreSerializer
+from books.serializers import CommentPostSerializer
 
-class BookListAPIView(ListCreateAPIView):
-    queryset=Book.objects.all()
-    serializer_class=BookSerializer
 
+from books import serializers
+
+# class BookListAPIView(ListCreateAPIView):
+#     queryset=Book.objects.all()
+#     serializer_class=BookSerializer
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
@@ -25,24 +28,24 @@ class GenreListAPIView(ListCreateAPIView):
     queryset=Genre.objects.all()
     serializer_class=GenreSerializer
 
-
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()
     serializer_class=AuthorSerializer
 
-
-class CommentListCreateView(ListCreateAPIView):
+class CommentView(ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
         return Comment.objects.filter(book_id=book_id)
 
-    def perform_create(self, serializer):
-        book_id = self.kwargs['book_id']
-        serializer.save(book_id=book_id)
-    
+class CommentCreateView(CreateAPIView):
+        serializer_class = CommentPostSerializer
+        permission_classes = [permissions.IsAuthenticated]
 
+        def perform_create(self, serializer):
+            serializer.save(user=self.request.user, avatar=self.request.user.avatar)
+    
 class LikeBookAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 

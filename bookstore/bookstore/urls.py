@@ -19,9 +19,8 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookListAPIView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, GenreListAPIView
-from books.views import BookRatingUpdateView
-from books.views import CommentListCreateView
+from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentView, GenreListAPIView
+from books.views import CommentCreateView
 # from cart.views import CartAPIView
 
 urlpatterns = [
@@ -29,18 +28,19 @@ urlpatterns = [
     #  path('api/', include('users.urls')), 
     # path("books/", include("books.urls", namespace="books")),
     path("", include("users.urls", namespace="users")),
-    path('books/', BookListAPIView.as_view(), name='books-list'),
+    # path('books/', BookListAPIView.as_view(), name='books-list'),
     path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
+    path('all-books/', BookViewSet.as_view({'get': 'list'})),
+
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
     # path('books/<int:pk>/comments/', CommentViewSet.as_view({'get': 'list'})),
 
-    path('books/<int:book_id>/comments/', CommentListCreateView.as_view(), name='comment-list-create'),
- 
+    path('books/<int:book_id>/comments/', CommentView.as_view(), name='comment-list-create'),
+    path('comments/create/', CommentCreateView.as_view(), name='comment-create'),
     path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
     path('book-ratings/<int:pk>/', BookRatingRetrieveUpdateDestroyView.as_view(), name='book-rating-retrieve-update-destroy'),
     path('book-ratings/<int:pk>/update/', BookRatingUpdateView.as_view(), name='book-rating-update'),
-    
     # path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
     # path('shopping-cart/', CartAPIView.as_view(), name='shopping-cart-retrieve-update'),
 

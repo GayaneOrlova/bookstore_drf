@@ -67,8 +67,8 @@ class Comment(models.Model):
 
 
 class BookRating(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=False)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=True)
     rating = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], default=0)    
 
     class Meta:

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from books.models import Book, BookRating, Comment, Genre
-from users.serializers import AvatarSerializer
 from users.serializers import CustomUserSerializer
 
 class BookSerializer(serializers.ModelSerializer):
@@ -35,7 +34,12 @@ class CommentSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()
     class Meta:
         model = Comment
-        fields = ('book', 'body', 'author', 'image', 'created_at')
+        fields = ['book', 'body', 'author', 'image', 'created_at']
+
+class CommentPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['book', 'body']
 
 class BookRatingSerializer(serializers.ModelSerializer):
     book = BookSerializer(read_only=True)
