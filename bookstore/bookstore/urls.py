@@ -21,25 +21,27 @@ from django.conf.urls.static import static
 
 from books.views import AuthorListAPIView, BookListAPIView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, GenreListAPIView
 from books.views import BookRatingUpdateView
+from books.views import CommentListCreateView
 # from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #  path('api/', include('users.urls')), 
-    path('books/', BookListAPIView.as_view(), name='books-list'),
     # path("books/", include("books.urls", namespace="books")),
-    path('book/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
-    
+    path("", include("users.urls", namespace="users")),
+    path('books/', BookListAPIView.as_view(), name='books-list'),
+    path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
-    # path('shopping-cart/', CartAPIView.as_view(), name='shopping-cart-retrieve-update'),
+    # path('books/<int:pk>/comments/', CommentViewSet.as_view({'get': 'list'})),
 
-
-    path("", include("users.urls", namespace="users")),
-    # path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
+    path('books/<int:book_id>/comments/', CommentListCreateView.as_view(), name='comment-list-create'),
  
     path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
     path('book-ratings/<int:pk>/', BookRatingRetrieveUpdateDestroyView.as_view(), name='book-rating-retrieve-update-destroy'),
     path('book-ratings/<int:pk>/update/', BookRatingUpdateView.as_view(), name='book-rating-update'),
+    
+    # path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
+    # path('shopping-cart/', CartAPIView.as_view(), name='shopping-cart-retrieve-update'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

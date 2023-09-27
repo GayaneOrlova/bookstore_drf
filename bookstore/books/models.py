@@ -2,6 +2,8 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth import get_user_model
+from users.models import Avatar
 
 from users.models import CustomUser
 
@@ -17,7 +19,6 @@ class Author(models.Model):
     def __str__(self):
         return self.name
     
-
 class Book(models.Model):
     title=models.CharField(max_length=255)
     author=models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -27,40 +28,43 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2)
     available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
-    # ratings = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     likes = models.ManyToManyField(CustomUser, blank=True, related_name="likes")
     body = models.TextField("Book description")
-    
+
     @property
     def overall_rating(self):
-        # get all the BookRatingModel from the database
         ratings = BookRating.objects.all().filter(book=self.id)
         if len(ratings) > 0:
             return sum([x.rating for x in ratings]) / len(ratings)
         else:
             return 0
     ratings = overall_rating
-
+    
     def __str__(self):
         return self.title
         
+        
 class Comment(models.Model):
     book = models.ForeignKey(Book, related_name="comments", on_delete=models.CASCADE)
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="post_comments",
-        null=True,
-        on_delete=models.SET_NULL,
-    )
     body = models.TextField("Comment body")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=False)
+    avatar = models.ForeignKey(Avatar, on_delete=models.CASCADE, null=False, blank=False)
     class Meta:
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f"{self.body[:20]} by {self.author.username}"
+        return f"{self.body[:10]} by User {self.user.username}"
+        
+    def author(self):
+        author = self.user.username
+        return author
+        
+    def image(self):
+        image = self.avatar.avatar
+        return image
+
 
 class BookRating(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=False)
