@@ -27,17 +27,40 @@ from cart.models import Cart
 #         return instance
 
 
-class CartItemSerializer(serializers.ModelSerializer):
-    book = BookSerializer()
+# class CartItemSerializer(serializers.ModelSerializer):
+#     book = BookSerializer()
+#     class Meta:
+#         model = CartItem
+#         fields = ['book', 'quantity']
+
+# class CartSerializer(serializers.ModelSerializer):
+#     user = serializers.StringRelatedField()
+#     cart_item = CartItemSerializer(many=True)
     
+#     class Meta:
+#         model = Cart
+#         fields = ['user', 'cart_item', 'total_price']
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    book = BookSerializer(many=False)
+    amount = serializers.IntegerField(default=1)
+    total_price = serializers.DecimalField(max_digits=5, decimal_places=2)
+
     class Meta:
         model = CartItem
-        fields = ['book', 'quantity']
+        fields = ['total_price', 'book', 'amount']
+        # depth = 0
+
 
 class CartSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    cart_item = CartItemSerializer(many=True)
-    
+    items = CartItemSerializer(many=True)
+    total_price = serializers.DecimalField(max_digits=5, decimal_places=2)
+
     class Meta:
         model = Cart
-        fields = ['user', 'cart_item', 'total_price']
+        fields = '__all__'
+    #     depth = 0
+
+    # def get_total_price(self, obj):
+    #     return obj.total_price

@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
 from books.models import Author, Book, Comment, Genre, BookRating
-from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, GenreSerializer
-from books.serializers import CommentPostSerializer
+from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
 
 
 from books import serializers

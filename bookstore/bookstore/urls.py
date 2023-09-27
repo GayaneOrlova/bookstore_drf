@@ -28,14 +28,10 @@ urlpatterns = [
     #  path('api/', include('users.urls')), 
     # path("books/", include("books.urls", namespace="books")),
     path("", include("users.urls", namespace="users")),
-    # path('books/', BookListAPIView.as_view(), name='books-list'),
-    path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
     path('all-books/', BookViewSet.as_view({'get': 'list'})),
-
+    path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
-    # path('books/<int:pk>/comments/', CommentViewSet.as_view({'get': 'list'})),
-
     path('books/<int:book_id>/comments/', CommentView.as_view(), name='comment-list-create'),
     path('comments/create/', CommentCreateView.as_view(), name='comment-create'),
     path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
