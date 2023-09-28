@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView
 # from books.views import RemoveFromFavoriteView
 from books.views import LikedBooksListView
+from books.views import BookListAPIView
 from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
 
 urlpatterns = [
@@ -29,7 +30,9 @@ urlpatterns = [
     #  path('api/', include('users.urls')), 
     # path("books/", include("books.urls", namespace="books")),
     path("", include("users.urls", namespace="users")),
-    path('all-books/', BookViewSet.as_view({'get': 'list'})),
+    path('all-books/', BookListAPIView.as_view(), name='get-all-book'),
+    # path('books/<pk>', BookListAPIView.as_view(), name='get-certain-book'),
+
     path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),

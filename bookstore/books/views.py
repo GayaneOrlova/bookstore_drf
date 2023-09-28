@@ -6,7 +6,11 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from books.models import Author, Book, Comment, Genre, BookRating
 from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
 
-
+class BookListAPIView(ListCreateAPIView):
+    queryset=Book.objects.all()
+    serializer_class=BookSerializer
+    
+ 
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
