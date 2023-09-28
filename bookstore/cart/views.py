@@ -1,156 +1,52 @@
-from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView
-from cart.serializers import CartSerializer
-from rest_framework import generics
-from cart.models import Cart
+from django.shortcuts import get_object_or_404, render
+from rest_framework.generics import DestroyAPIView, ListCreateAPIView
+
+from rest_framework import generics, permissions
 from rest_framework.response import Response
-
-# class CartAPIView(ListCreateAPIView):
-#     queryset=Cart.objects.all()
-#     serializer_class=CartSerializer(many=True)
-
-#     def post(self, request):
-#         serializer = CartSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=201)
-#         return Response(serializer.errors, status=400)
-
-
-# class CartAPIView(generics.RetrieveUpdateAPIView):
-#     queryset = Cart.objects.all()
-#     serializer_class = CartSerializer
-
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from books.models import Book
+from cart.models import Cart, CartItem
+from cart.serializers import CartSerializer, CartItemSerializer
 
-# class CartView(APIView):
-#     def get(self, request):
-#         user = request.user
-#         cart = Cart.objects.filter(user=user).first()
-#         serializer = CartSerializer(cart)
-#         return Response(serializer.data)
+class CartAPIView(ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+class AddToCartView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     
-#     def post(self, request):
-#         user = request.user
-#         cart = Cart.objects.filter(user=user).first()
-#         serializer = CartSerializer(cart, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=400)
-
-
-class CartView(
-    viewsets.GenericViewSet,
-    viewsets.mixins.RetrieveModelMixin,
-    viewsets.mixins.CreateModelMixin,
-    viewsets.mixins.DestroyModelMixin,
-):
-
-    serializer_class = CartSerializer
-    authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    pagination_class = None
-
-    def get(self, request):
-        try:
-            serialized = CartSerializer(
-                CartModel.objects.get(user=request.user, bought=0), context={"request": request}
-            )
-            return Response(data=serialized.data, status=status.HTTP_200_OK)
-        except CartModel.DoesNotExist:
-            return Response(
-                data={"detail": "There is no active cart of the user"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    def create(self, request, *args, **kwargs):
-        # get the cart of the user from the database if it exists, or create a new one
-        cart, _ = CartModel.objects.get_or_create(user=request.user, bought=0)
-        # if the item_serializer is valid, let's create a cart item and add it to our cart
-        # get the requested book
-        try:
-            book = BookModel.objects.get(pk=request.data.get("book", -1))
-        except BookModel.DoesNotExist:
-            return Response(
-                data={"detail": f"Book couldn't be found"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serialized_book = BookSerializer(book, context={"request": request}).data
-        cart_item, created = CartItemModel.objects.get_or_create(cart=cart, book=book)
-
-        if not created:
-            # if the cart item isn't created, and there is enough book in the store increase the amount of it
-            if book.store_amount > 0:
-                cart_item.amount += 1
-                book.store_amount -= 1
-                book.save()
-                cart_item.save()
-                cart.items.add(cart_item.id)  # add func immediately updates the database
-                return Response(
-                    data={"detail": f"Increased {book} amount to {cart_item.amount}"},
-                    status=status.HTTP_201_CREATED,
-                    headers=self.headers,
-                )
-            else:
-                return Response(
-                    data={"detail": f"There is no more {book} left in the store"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                    headers=self.headers,
-                )
+    def post(self, request):
+        book_id = request.data.get('id')
+        book = get_object_or_404(Book, id= book_id)
+        cart = Cart.objects.get(user=request.user)
+    
+        item = cart.items.filter(book=book).first()
+    
+        if item:
+            item.amount += 1
+            item.save()
         else:
-            cart.items.add(cart_item.id)  # add function immediately updates the database
-            return Response(
-                data={"detail": f"Added {book} to Cart"},
-                status=status.HTTP_201_CREATED,
-                headers=self.headers,
-            )
+            item = CartItem.objects.create(book=book)
+            cart.items.add(item)
+    
+        book.store_amount -= 1
+        book.save()
+    
+        return Response("Book added to cart successfully")
 
-    def delete(self, request):
-        try:
-            cart = CartModel.objects.get(user=request.user.id, bought=0)
-        except CartModel.DoesNotExist:
-            return Response(
-                data={"detail": "There is no active cart of the user"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # if the request has book id attached to it, remove X amount of books from the cart
-        if request.data.get("book", ""):
-            book_id = request.data["book"]
-            try:
-                book = BookModel.objects.get(pk=book_id)
-            except BookModel.DoesNotExist:
-                return Response(data={"detail": f"Book {book_id} is not found"})
-
-            serialized_book = BookSerializer(book, context={"request": request}).data
-            try:
-                cart_item = CartItemModel.objects.get(cart=cart, book=book_id)
-                delete_amount = int(request.data.get("delete_amount", 1))
-                # if the amount of cart_item is bigger than zero and delete_amount,
-                # reduce the item amount in the cart, otherwise delete the cart_item
-                if cart_item.amount > 0 and cart_item.amount > delete_amount:
-                    cart_item.amount -= delete_amount
-                    book.store_amount += delete_amount
-                    cart_item.save()
-                    book.save()
-                    return Response(
-                        data={"detail": f"Removed {delete_amount} {book.name} from Cart"}
-                    )
-                else:
-                    cart_item.delete(
-                        request.user  # (cart item is deleted by the request.user)
-                    )  # deleting the cart item restores book's store amount
-                    return Response(data={"detail": f"Removed {book.name} from Cart"})
-
-            except CartItemModel.DoesNotExist:
-                return Response(
-                    data={"detail": f"Book {book_id} is not in the Cart"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        else:
-            # otherwise delete the cart entirely
-            cart.delete(request.user)  # this soft deletes the card because of the basemanager
-            return Response(data={"detail": "Cart has been deleted"}, status=status.HTTP_200_OK)
+class DeleteFromCartView(APIView):
+    def post(self, request):
+        book_id = request.data.get('id')
+        item = get_object_or_404(CartItem, id=book_id)
+        cart = Cart.objects.get(user=request.user)
+        
+        # Update the store amount of the book
+        item.book.store_amount += item.amount
+        item.book.save()
+        
+        # Remove the item from the cart
+        cart.items.remove(item)
+        
+        return Response("Item removed from cart successfully")

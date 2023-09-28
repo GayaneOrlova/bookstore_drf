@@ -19,9 +19,8 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentView, GenreListAPIView
-from books.views import CommentCreateView
-# from cart.views import CartAPIView
+from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView
+from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,7 +36,10 @@ urlpatterns = [
     path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
     path('book-ratings/<int:pk>/', BookRatingRetrieveUpdateDestroyView.as_view(), name='book-rating-retrieve-update-destroy'),
     path('book-ratings/<int:pk>/update/', BookRatingUpdateView.as_view(), name='book-rating-update'),
-    # path('shopping_carts/', CartAPIView.as_view(), name='shopping_carts'),
-    # path('shopping-cart/', CartAPIView.as_view(), name='shopping-cart-retrieve-update'),
+    
+    path('user-cart/', CartAPIView.as_view(), name='user-cart'),
+    path('cart/delete-book/', DeleteFromCartView.as_view(), name='cart-item-detail'),
+    path('cart/add-book/', AddToCartView.as_view(), name='cart-add'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

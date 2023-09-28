@@ -11,6 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
     available = serializers.BooleanField(default=True)
     image = serializers.ImageField()
     ratings = serializers.IntegerField()
+    store_amount = serializers.IntegerField()
 
     likes = serializers.BooleanField(default=False)
     class Meta:

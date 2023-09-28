@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,11 +7,6 @@ from books.models import Author, Book, Comment, Genre, BookRating
 from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
 
 
-from books import serializers
-
-# class BookListAPIView(ListCreateAPIView):
-#     queryset=Book.objects.all()
-#     serializer_class=BookSerializer
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
@@ -19,7 +14,7 @@ class BookViewSet(viewsets.ViewSet):
         return Response(serializer.data)
     
     def retrieve(self, request, pk):
-        book=Book.objects.get(pk=pk) #сделать возврат пустого ответа -нет такой книги
+        book=Book.objects.get(pk=pk)
         serializer=BookSerializer(book)
         return Response(serializer.data)
 

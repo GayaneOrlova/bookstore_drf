@@ -27,6 +27,7 @@ class Book(models.Model):
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
     likes = models.ManyToManyField(CustomUser, blank=True, related_name="likes")
     body = models.TextField("Book description")
+    store_amount = models.IntegerField(default=1)
 
     @property
     def overall_rating(self):
@@ -61,7 +62,6 @@ class Comment(models.Model):
     def image(self):
         image = self.avatar.avatar
         return image
-
 
 class BookRating(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)
