@@ -14,5 +14,6 @@ router.register(r"", Book)
 urlpatterns = [
     path("", include(router.urls)),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
+    
 
 ]

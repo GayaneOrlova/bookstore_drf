@@ -71,4 +71,18 @@ class BookRatingUpdateView(UpdateAPIView):
     queryset = BookRating.objects.all()
     serializer_class = BookRatingCreateUpdateSerializer
 
+from rest_framework.generics import ListAPIView
+from .models import Book
+from .serializers import BookSerializer
+
+class LikedBooksListView(ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Book.objects.filter(likes=user)
+
+
+
 

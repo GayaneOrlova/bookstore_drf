@@ -20,6 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView
+# from books.views import RemoveFromFavoriteView
+from books.views import LikedBooksListView
 from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
 
 urlpatterns = [
@@ -41,5 +43,6 @@ urlpatterns = [
     path('cart/delete-book/', DeleteFromCartView.as_view(), name='cart-item-detail'),
     path('cart/add-book/', AddToCartView.as_view(), name='cart-add'),
 
-
+    
+    path('liked/list/', LikedBooksListView.as_view(), name='liked_books_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
