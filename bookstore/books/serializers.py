@@ -9,15 +9,16 @@ class BookSerializer(serializers.ModelSerializer):
     published_at=serializers.IntegerField()
     price=serializers.DecimalField(max_digits=5, decimal_places=2)
     available = serializers.BooleanField(default=True)
-    image = serializers.ImageField()
-    ratings = serializers.IntegerField()
+    image = serializers.ImageField(use_url=True)
+    # ratings = serializers.IntegerField()
+    overall_rating = serializers.IntegerField()
     store_amount = serializers.IntegerField()
 
-    likes = serializers.BooleanField(default=False)
+    # likes = serializers.BooleanField(default=False)
     class Meta:
         model = Book
         fields = "__all__"
-        
+
 class GenreSerializer(serializers.ModelSerializer):
     name=serializers.CharField()
     class Meta:
@@ -32,26 +33,38 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.CharField()
-    image = serializers.ImageField()
+    avatar_url = serializers.ImageField()
     class Meta:
         model = Comment
-        fields = ['book', 'body', 'author', 'image', 'created_at']
+        fields = ['book', 'body', 'author', 'avatar_url', 'created_at']
 
 class CommentPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['book', 'body']
 
-class BookRatingSerializer(serializers.ModelSerializer):
-    book = BookSerializer(read_only=True)
-    user =CustomUserSerializer
-    class Meta:
-        model = BookRating
-        fields = '__all__'
+# class BookRatingSerializer(serializers.ModelSerializer):
+#     book = BookSerializer(read_only=True)
+#     user =CustomUserSerializer
+#     class Meta:
+#         model = BookRating
+#         fields = '__all__'
 
-class BookRatingCreateUpdateSerializer(serializers.ModelSerializer):
+
+class BookRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRating
-        fields = ('book', 'rating')
+        fields = ['rating']
+
+    # def validate_rating(self, value):
+    #     if value < 1 or value > 5:
+    #         raise serializers.ValidationError("Рейтинг должен быть от 1 до 5.")
+    #     return value
+
+
+class BookRatingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookRating
+        fields = ['book', 'rating']
 
 

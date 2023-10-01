@@ -2,13 +2,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
+from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
 from books.models import Author, Book, Comment, Genre, BookRating
-from books.serializers import AuthorSerializer, BookSerializer, BookRatingCreateUpdateSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
+from books.serializers import AuthorSerializer, BookSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
+from books.serializers import BookRatingCreateSerializer
 
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
+    
     
  
 class BookViewSet(viewsets.ViewSet):
@@ -19,7 +21,7 @@ class BookViewSet(viewsets.ViewSet):
     
     def retrieve(self, request, pk):
         book=Book.objects.get(pk=pk)
-        serializer=BookSerializer(book)
+        serializer=BookSerializer(book, context={"request": request})
         return Response(serializer.data)
 
 class GenreListAPIView(ListCreateAPIView):
@@ -59,25 +61,43 @@ class LikeBookAPIView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
-class BookRatingListCreateView(ListCreateAPIView):
-    queryset = BookRating.objects.all()
-    
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return BookRatingCreateUpdateSerializer
-        return BookRatingSerializer
-
-class BookRatingRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+class BookRatingView(RetrieveAPIView):
     queryset = BookRating.objects.all()
     serializer_class = BookRatingSerializer
+    lookup_field = 'book_id'
 
-class BookRatingUpdateView(UpdateAPIView):
-    queryset = BookRating.objects.all()
-    serializer_class = BookRatingCreateUpdateSerializer
 
-from rest_framework.generics import ListAPIView
-from .models import Book
-from .serializers import BookSerializer
+
+
+class BookRatingCreateView(APIView):
+    def post(self, request, pk):
+        book = Book.objects.get(pk=pk)
+        user = request.user
+
+        try:
+            rating = BookRating.objects.get(book=book, user=user)
+            return Response("Рейтинг уже стоит", status=status.HTTP_400_BAD_REQUEST)
+        except BookRating.DoesNotExist:
+            serializer = BookRatingSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(book=book, user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookRatingDetailView(APIView):
+    def get(self, request, pk):
+        book = Book.objects.get(pk=pk)
+        user = request.user
+
+        try:
+            rating = BookRating.objects.get(book=book, user=user)
+            serializer = BookRatingSerializer(rating)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except BookRating.DoesNotExist:
+            return Response("Рейтинг не найден", status=status.HTTP_404_NOT_FOUND)
 
 class LikedBooksListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]

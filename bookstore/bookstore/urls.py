@@ -19,10 +19,9 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookRatingUpdateView, BookRatingListCreateView, BookRatingRetrieveUpdateDestroyView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView
-# from books.views import RemoveFromFavoriteView
-from books.views import LikedBooksListView
-from books.views import BookListAPIView
+from books.views import AuthorListAPIView, BookListAPIView, BookRatingView, BookRatingCreateView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, LikedBooksListView
+from books.views import BookRatingDetailView
+
 from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
 
 urlpatterns = [
@@ -30,22 +29,24 @@ urlpatterns = [
     #  path('api/', include('users.urls')), 
     # path("books/", include("books.urls", namespace="books")),
     path("", include("users.urls", namespace="users")),
+    
     path('all-books/', BookListAPIView.as_view(), name='get-all-book'),
-    # path('books/<pk>', BookListAPIView.as_view(), name='get-certain-book'),
-
     path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
+    
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
-    path('books/<int:book_id>/comments/', CommentView.as_view(), name='comment-list-create'),
-    path('comments/create/', CommentCreateView.as_view(), name='comment-create'),
-    path('book-ratings/', BookRatingListCreateView.as_view(), name='book-rating-list-create'),
-    path('book-ratings/<int:pk>/', BookRatingRetrieveUpdateDestroyView.as_view(), name='book-rating-retrieve-update-destroy'),
-    path('book-ratings/<int:pk>/update/', BookRatingUpdateView.as_view(), name='book-rating-update'),
+    
+    path('book-comment/<int:book_id>/', CommentView.as_view(), name='comment-list-create'),
+    path('comment/create/', CommentCreateView.as_view(), name='comment-create'),
+
+    path('book-rating/<int:pk>/', BookRatingDetailView.as_view(), name='book_rating'),
+    path('books/<int:pk>/rating/', BookRatingCreateView.as_view(), name='book_rating'),
+
     
     path('user-cart/', CartAPIView.as_view(), name='user-cart'),
     path('cart/delete-book/', DeleteFromCartView.as_view(), name='cart-item-detail'),
     path('cart/add-book/', AddToCartView.as_view(), name='cart-add'),
 
     
-    path('liked/list/', LikedBooksListView.as_view(), name='liked_books_list'),
+    path('favorites-books/', LikedBooksListView.as_view(), name='liked_books_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
