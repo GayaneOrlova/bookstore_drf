@@ -19,7 +19,7 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookListAPIView, BookRatingView, BookRatingCreateView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, LikedBooksListView
+from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, LikedBooksListView
 from books.views import BookRatingDetailView
 
 from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
@@ -40,7 +40,7 @@ urlpatterns = [
     path('comment/create/', CommentCreateView.as_view(), name='comment-create'),
 
     path('book-rating/<int:pk>/', BookRatingDetailView.as_view(), name='book_rating'),
-    path('books/<int:pk>/rating/', BookRatingCreateView.as_view(), name='book_rating'),
+    path('book-rating/create/<int:pk>/', BookRatingCreateView.as_view(), name='book_rating'),
 
     
     path('user-cart/', CartAPIView.as_view(), name='user-cart'),

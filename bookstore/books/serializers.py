@@ -10,7 +10,6 @@ class BookSerializer(serializers.ModelSerializer):
     price=serializers.DecimalField(max_digits=5, decimal_places=2)
     available = serializers.BooleanField(default=True)
     image = serializers.ImageField(use_url=True)
-    # ratings = serializers.IntegerField()
     overall_rating = serializers.IntegerField()
     store_amount = serializers.IntegerField()
 
@@ -55,13 +54,7 @@ class BookRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRating
         fields = ['rating']
-
-    # def validate_rating(self, value):
-    #     if value < 1 or value > 5:
-    #         raise serializers.ValidationError("Рейтинг должен быть от 1 до 5.")
-    #     return value
-
-
+        
 class BookRatingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRating

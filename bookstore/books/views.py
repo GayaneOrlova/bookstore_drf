@@ -61,14 +61,6 @@ class LikeBookAPIView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
-class BookRatingView(RetrieveAPIView):
-    queryset = BookRating.objects.all()
-    serializer_class = BookRatingSerializer
-    lookup_field = 'book_id'
-
-
-
-
 class BookRatingCreateView(APIView):
     def post(self, request, pk):
         book = Book.objects.get(pk=pk)
@@ -97,7 +89,8 @@ class BookRatingDetailView(APIView):
             serializer = BookRatingSerializer(rating)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except BookRating.DoesNotExist:
-            return Response("Рейтинг не найден", status=status.HTTP_404_NOT_FOUND)
+            return Response("Рейтинг не найден")
+
 
 class LikedBooksListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
