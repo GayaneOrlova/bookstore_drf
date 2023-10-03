@@ -21,8 +21,9 @@ from django.conf.urls.static import static
 
 from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, LikedBooksListView
 from books.views import BookRatingDetailView
+from cart.views import UpdateCartItemView
 
-from cart.views import AddToCartView, CartAPIView, DeleteFromCartView
+from cart.views import CartAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,10 +43,8 @@ urlpatterns = [
     path('book-rating/<int:pk>/', BookRatingDetailView.as_view(), name='book_rating'),
     path('book-rating/create/<int:pk>/', BookRatingCreateView.as_view(), name='book_rating'),
 
-    
-    path('user-cart/', CartAPIView.as_view(), name='user-cart'),
-    path('cart/delete-book/', DeleteFromCartView.as_view(), name='cart-item-detail'),
-    path('cart/add-book/', AddToCartView.as_view(), name='cart-add'),
+    path('cart/', CartAPIView.as_view(), name='user-cart'),
+    path('cart-item/update/', UpdateCartItemView.as_view(), name='update_cart_item'),
 
     
     path('favorites-books/', LikedBooksListView.as_view(), name='liked_books_list'),

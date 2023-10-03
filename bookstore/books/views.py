@@ -76,20 +76,19 @@ class BookRatingCreateView(APIView):
             serializer.save(book=book, user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BookRatingDetailView(APIView):
     def get(self, request, pk):
         book = Book.objects.get(pk=pk)
         user = request.user
-
         try:
             rating = BookRating.objects.get(book=book, user=user)
             serializer = BookRatingSerializer(rating)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except BookRating.DoesNotExist:
-            return Response("Рейтинг не найден")
+            return Response({"rating": None})
 
 
 class LikedBooksListView(ListAPIView):

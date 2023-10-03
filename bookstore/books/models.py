@@ -35,10 +35,12 @@ class Book(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(datetime.date.today().year)])
     price = models.DecimalField(max_digits=5, decimal_places=2)
     available = models.BooleanField(default=True)
+    recommendation = models.BooleanField(default=False)
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
     # likes = models.ManyToManyField(CustomUser, blank=True, related_name="likes")
     body = models.TextField("Book description")
     store_amount = models.IntegerField(default=1)#
+    
     
     @property
     def overall_rating(self):

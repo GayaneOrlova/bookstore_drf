@@ -9,6 +9,7 @@ class BookSerializer(serializers.ModelSerializer):
     published_at=serializers.IntegerField()
     price=serializers.DecimalField(max_digits=5, decimal_places=2)
     available = serializers.BooleanField(default=True)
+    recommendation = serializers.BooleanField(default=False)
     image = serializers.ImageField(use_url=True)
     overall_rating = serializers.IntegerField()
     store_amount = serializers.IntegerField()

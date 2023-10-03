@@ -1,17 +1,11 @@
 from bookstore.settings import AUTH_USER_MODEL
 from django.db import models
 from books.models import Book
+from users.models import CustomUser
+from django.core.exceptions import ObjectDoesNotExist
 
 class Cart(models.Model):
-    items = models.ManyToManyField("CartItem")  
-    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
-    @property
-    def total_price(self):
-        total = 0
-        for item in self.items.all():
-            total += item.total_price
-        return total
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"User {self.user}'s Cart {self.id}"
@@ -19,17 +13,22 @@ class Cart(models.Model):
 class CartItem(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     amount = models.IntegerField(default=1)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     
     @property
     def total_price(self):
         return self.book.price * self.amount
-    
-    def delete(self):
-        book = Book.objects.get(pk=self.book.id)
-        book.store_amount += self.amount
-        book.save()
-        super(CartItem, self).delete()
         
+    # @property
+    # def book_image(self):
+    #     books = models.ForeignKey(Book, on_delete=models.CASCADE)
+    #     try:
+    #         book_images = Book.objects.get(image=books)
+    #     except ObjectDoesNotExist:
+    #         return None
+    #     return book_images.image
+    
+    
     def __str__(self):
         return f"Item {self.id} (Book {self.book})"
 
