@@ -12,8 +12,6 @@ class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
     
-    
- 
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
@@ -39,17 +37,7 @@ class CommentView(ListCreateAPIView):
     def get_queryset(self):
         book_id = self.kwargs['book_id']
         return Comment.objects.filter(book_id=book_id)
-
-# class CommentCreateView(CreateAPIView):
-#         serializer_class = CommentPostSerializer
-#         permission_classes = [permissions.IsAuthenticated]
-
-#         def perform_create(self, serializer):
-#             serializer.save(user=self.request.user, avatar=self.request.user.avatar)
-
-            # serializer.save(user=self.request.user, avatar=self.request.user.avatar)
-
-
+        
 class CommentCreateView(CreateAPIView):
     serializer_class = CommentPostSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -61,21 +49,6 @@ class CommentCreateView(CreateAPIView):
         except Book.DoesNotExist:
             raise serializers.ValidationError('Invalid book_id')
         serializer.save(user=self.request.user, book=book)
-
-class LikeBookAPIView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, pk):
-        user = request.user
-        book = get_object_or_404(Book, pk=pk)
-
-        if user in book.likes.all():
-            book.likes.remove(user)
-
-        else:
-            book.likes.add(user)
-
-        return Response(status=status.HTTP_200_OK)
 
 class BookRatingCreateView(APIView):
     def post(self, request, pk):
@@ -165,7 +138,7 @@ class FavoriteListView(APIView):
         user_id = request.user.id
         
         favorite_items = BookLike.objects.filter(user_id=user_id)
-        serializer = BookLikeSerializer(favorite_items, many=True)
+        serializer = BookLikeSerializer(favorite_items, many=True, context={'request': request})
         return Response(serializer.data)
 
 class FavoriteView(APIView):
@@ -185,6 +158,6 @@ class FavoriteView(APIView):
             book_like.delete()
             return Response("Item removed from favorites", status=status.HTTP_200_OK)
         except BookLike.DoesNotExist:
-            book_like = BookLike.objects.create(user_id=user_id, book_id=book)
+            book_like = BookLike.objects.create(user_id=user_id, book_id=book_id)
             serializer = BookLikeSerializer(book_like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from books.models import Book, BookRating, Comment, Genre
+from .models import BookLike
 from users.serializers import CustomUserSerializer
 
 class BookSerializer(serializers.ModelSerializer):
@@ -13,8 +14,6 @@ class BookSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     overall_rating = serializers.IntegerField()
     store_amount = serializers.IntegerField()
-
-    # likes = serializers.BooleanField(default=False)
     class Meta:
         model = Book
         fields = "__all__"
@@ -43,14 +42,6 @@ class CommentPostSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['body']
 
-# class BookRatingSerializer(serializers.ModelSerializer):
-#     book = BookSerializer(read_only=True)
-#     user =CustomUserSerializer
-#     class Meta:
-#         model = BookRating
-#         fields = '__all__'
-
-
 class BookRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRating
@@ -61,22 +52,20 @@ class BookRatingCreateSerializer(serializers.ModelSerializer):
         model = BookRating
         fields = ['book', 'rating']
 
-
-
-
-from .models import BookLike
-
 class BookLikeSerializer(serializers.ModelSerializer):
-    # book = BookSerializer()
-    # book_author = serializers.CharField(source="book.author")
-    # book_image = serializers.CharField(source="book.image")
-    # id = serializers.IntegerField()
-    # amount = serializers.IntegerField(default=1)
-    # price = serializers.DecimalField(max_digits=5, decimal_places=2)
-
+    author = serializers.CharField(source="book.author")
+    title= serializers.CharField(source="book.title")
+    overall_rating = serializers.IntegerField(source="book.overall_rating")
+    id = serializers.IntegerField(source="book.id")
+    price = serializers.DecimalField(source="book.price", max_digits=5, decimal_places=2)
+    image = serializers.SerializerMethodField()
+    
+    def get_image(self, obj):
+        if obj.book.image:
+            request = self.context.get('request')
+            if request is not None:
+                return request.build_absolute_uri(obj.book.image.url)
+        return None
     class Meta:
         model = BookLike
-        fields = ['book_id']
-
-        # fields = ['amount', 'price', 'book_name', 'id', 'book_image', 'book.author']
-        # fields = '__all__'
+        fields = ['price', 'title', 'id', 'image', 'author', 'overall_rating']

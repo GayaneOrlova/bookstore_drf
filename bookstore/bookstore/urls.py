@@ -43,7 +43,7 @@ urlpatterns = [
     path('cart-item/update/', UpdateCartItemView.as_view(), name='update_cart_item'),
     path('add-to-cart/', AddToCartView.as_view(), name='add_to_cart'),
 
-    path('add-to-favorite/', FavoriteView.as_view(), name='add-to-favorite'),
+    path('favorite-change/', FavoriteView.as_view(), name='add-to-favorite'),
     path('favorite-list/', FavoriteListView.as_view(), name='favorite-list'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
