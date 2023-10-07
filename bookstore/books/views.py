@@ -6,6 +6,7 @@ from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIV
 from books.models import Author, Book, Comment, Genre, BookRating
 from books.serializers import AuthorSerializer, BookSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
 from books.serializers import BookRatingCreateSerializer
+from . import serializers
 
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
@@ -39,13 +40,28 @@ class CommentView(ListCreateAPIView):
         book_id = self.kwargs['book_id']
         return Comment.objects.filter(book_id=book_id)
 
-class CommentCreateView(CreateAPIView):
-        serializer_class = CommentPostSerializer
-        permission_classes = [permissions.IsAuthenticated]
+# class CommentCreateView(CreateAPIView):
+#         serializer_class = CommentPostSerializer
+#         permission_classes = [permissions.IsAuthenticated]
 
-        def perform_create(self, serializer):
-            serializer.save(user=self.request.user, avatar=self.request.user.avatar)
-    
+#         def perform_create(self, serializer):
+#             serializer.save(user=self.request.user, avatar=self.request.user.avatar)
+
+            # serializer.save(user=self.request.user, avatar=self.request.user.avatar)
+
+
+class CommentCreateView(CreateAPIView):
+    serializer_class = CommentPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        book_id = self.kwargs['book_id']
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            raise serializers.ValidationError('Invalid book_id')
+        serializer.save(user=self.request.user, book=book)
+
 class LikeBookAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 

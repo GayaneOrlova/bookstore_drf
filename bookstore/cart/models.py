@@ -16,7 +16,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     
     @property
-    def total_price(self):
+    def price(self):
         return self.book.price * self.amount
         
     # @property

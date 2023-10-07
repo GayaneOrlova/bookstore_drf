@@ -1,8 +1,11 @@
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from books.models import Book
 from cart.models import Cart, CartItem
 from cart.serializers import CartItemSerializer
+
 
 class CartAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -12,10 +15,10 @@ class CartAPIView(APIView):
         try: 
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
-            return Response({"items": [], "total_price": None})
+            return Response({"items": [], "price": None})
  
         items = CartItem.objects.filter(cart=cart)
-        total_price = sum([item.total_price for item in items])
+        total_price = sum([item.price for item in items])
         serializer = CartItemSerializer(items, many=True)
         return Response({"items": serializer.data, "total_price": total_price})
 
@@ -31,12 +34,38 @@ class UpdateCartItemView(APIView):
 
         if amount > 0:
             # cart_item = CartItem.objects.get(id = cart_item_id)
-            cart_item.amount = amount
-            cart_item.save()
-            return Response("ok")
+            if amount <= cart_item.book.store_amount:
+                cart_item.amount = amount
+                cart_item.save()
+                return Response("ok")
+            else:
+                return Response("Cannot add more books than available", status=status.HTTP_400_BAD_REQUEST)
+
         if amount == 0:
             cart_item = CartItem.objects.get(id = cart_item_id)
             cart_item.delete()
             return Response('delete')
             
         raise RuntimeError("not correct")
+
+
+class AddToCartView(APIView):
+    def post(self, request):
+        book_id = request.data.get('id')
+        user_id = request.user.id
+        
+        try:
+            cart = Cart.objects.get(user_id=user_id)
+        except Cart.DoesNotExist:
+            cart = Cart.objects.create(user_id=user_id)
+        
+        book = get_object_or_404(Book, id=book_id) 
+        
+        try:
+            cart_item = CartItem.objects.get(cart=cart, book=book)
+            cart_item.amount += 1
+            cart_item.save()
+            return Response("ok")
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(cart=cart, book=book)
+            return Response("ok")

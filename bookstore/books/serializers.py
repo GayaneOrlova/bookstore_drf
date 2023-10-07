@@ -41,7 +41,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['book', 'body']
+        fields = ['body']
 
 # class BookRatingSerializer(serializers.ModelSerializer):
 #     book = BookSerializer(read_only=True)
