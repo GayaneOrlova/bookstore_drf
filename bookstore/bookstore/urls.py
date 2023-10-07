@@ -19,15 +19,12 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, LikedBooksListView
-from books.views import BookRatingDetailView
+from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookRatingDetailView, BookViewSet, CommentCreateView, CommentView, GenreListAPIView, FavoriteView, FavoriteListView
 from cart.views import AddToCartView, CartAPIView, UpdateCartItemView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #  path('api/', include('users.urls')), 
-    # path("books/", include("books.urls", namespace="books")),
     path("", include("users.urls", namespace="users")),
     
     path('all-books/', BookListAPIView.as_view(), name='get-all-book'),
@@ -44,9 +41,9 @@ urlpatterns = [
 
     path('cart/', CartAPIView.as_view(), name='user-cart'),
     path('cart-item/update/', UpdateCartItemView.as_view(), name='update_cart_item'),
-
-    path('favorites-books/', LikedBooksListView.as_view(), name='liked_books_list'),
-    
     path('add-to-cart/', AddToCartView.as_view(), name='add_to_cart'),
+
+    path('add-to-favorite/', FavoriteView.as_view(), name='add-to-favorite'),
+    path('favorite-list/', FavoriteListView.as_view(), name='favorite-list'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

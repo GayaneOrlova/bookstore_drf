@@ -62,3 +62,21 @@ class BookRatingCreateSerializer(serializers.ModelSerializer):
         fields = ['book', 'rating']
 
 
+
+
+from .models import BookLike
+
+class BookLikeSerializer(serializers.ModelSerializer):
+    # book = BookSerializer()
+    # book_author = serializers.CharField(source="book.author")
+    # book_image = serializers.CharField(source="book.image")
+    # id = serializers.IntegerField()
+    # amount = serializers.IntegerField(default=1)
+    # price = serializers.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        model = BookLike
+        fields = ['book_id']
+
+        # fields = ['amount', 'price', 'book_name', 'id', 'book_image', 'book.author']
+        # fields = '__all__'

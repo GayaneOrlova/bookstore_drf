@@ -88,6 +88,6 @@ class BookRating(models.Model):
         return f"Book {self.book.title} rated {self.rating} by User {self.user.username}"
 
 class BookLike(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)
+    book_id = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=True)
     

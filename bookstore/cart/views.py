@@ -54,6 +54,7 @@ class AddToCartView(APIView):
         book_id = request.data.get('id')
         user_id = request.user.id
         
+        
         try:
             cart = Cart.objects.get(user_id=user_id)
         except Cart.DoesNotExist:
@@ -69,3 +70,4 @@ class AddToCartView(APIView):
         except CartItem.DoesNotExist:
             cart_item = CartItem.objects.create(cart=cart, book=book)
             return Response("ok")
+            

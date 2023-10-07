@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, CreateAPIView
 from books.models import Author, Book, Comment, Genre, BookRating
-from books.serializers import AuthorSerializer, BookSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
-from books.serializers import BookRatingCreateSerializer
+from books.serializers import AuthorSerializer, BookLikeSerializer, BookSerializer, BookRatingSerializer, CommentSerializer, CommentPostSerializer, GenreSerializer
+from books.models import BookLike
 from . import serializers
 
 class BookListAPIView(ListCreateAPIView):
@@ -107,14 +107,84 @@ class BookRatingDetailView(APIView):
             return Response({"rating": None})
 
 
-class LikedBooksListView(ListAPIView):
+# class LikedBooksListView(ListAPIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     serializer_class = BookSerializer
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return Book.objects.filter(likes=user)
+
+
+
+
+
+
+
+# class AddToFavoriteView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     def post(self, request):
+#         book_id = request.data.get('id')
+#         user_id = request.user.id
+#         try:
+#             book = Book.objects.get(id=book_id)
+#         except Book.DoesNotExist:
+#             return Response("Invalid book ID", status=status.HTTP_400_BAD_REQUEST)
+        
+#         try:
+#             book_like = BookLike.objects.get(user_id=user_id, book_id=book_id)
+#             return Response("Item already added to favorites", status=status.HTTP_400_BAD_REQUEST)
+#         except BookLike.DoesNotExist:
+#             book_like = BookLike.objects.create(user_id=user_id, book_id=book_id)
+#             serializer = BookLikeSerializer(book_like)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+      
+
+
+# class RemoveFromFavoriteView(APIView):
+#     def post(self, request):
+#         book_id = request.data.get('id')
+#         user_id = request.user.id
+        
+#         try:
+#             book = Book.objects.get(id=book_id)
+#         except Book.DoesNotExist:
+#             return Response("Invalid book ID", status=status.HTTP_400_BAD_REQUEST)
+        
+        
+#         try:
+#             book_like = BookLike.objects.get(user_id=user_id, book_id=book_id)
+#             book_like.delete()
+#             return Response("Item removed from favorites")
+#         except BookLike.DoesNotExist:
+#             return Response("Item not found in favorites", status=status.HTTP_404_NOT_FOUND)
+
+class FavoriteListView(APIView):
+    def get(self, request):
+        user_id = request.user.id
+        
+        favorite_items = BookLike.objects.filter(user_id=user_id)
+        serializer = BookLikeSerializer(favorite_items, many=True)
+        return Response(serializer.data)
+
+class FavoriteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = BookSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return Book.objects.filter(likes=user)
-
-
-
-
+    
+    def post(self, request):
+        book_id = request.data.get('id')
+        user_id = request.user.id
+        
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            return Response("Book does not exist", status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            book_like = BookLike.objects.get(user_id=user_id, book_id=book_id)
+            book_like.delete()
+            return Response("Item removed from favorites", status=status.HTTP_200_OK)
+        except BookLike.DoesNotExist:
+            book_like = BookLike.objects.create(user_id=user_id, book_id=book)
+            serializer = BookLikeSerializer(book_like)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
