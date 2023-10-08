@@ -30,14 +30,7 @@ class GenreListAPIView(ListCreateAPIView):
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()
     serializer_class=AuthorSerializer
-
-class CommentView(ListCreateAPIView):
-    serializer_class = CommentSerializer
-
-    def get_queryset(self):
-        book_id = self.kwargs['book_id']
-        return Comment.objects.filter(book_id=book_id)
-        
+     
 class CommentCreateView(CreateAPIView):
     serializer_class = CommentPostSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -49,6 +42,17 @@ class CommentCreateView(CreateAPIView):
         except Book.DoesNotExist:
             raise serializers.ValidationError('Invalid book_id')
         serializer.save(user=self.request.user, book=book)
+    
+class CommentListView(APIView):        
+    def get(self, request, book_id):
+        try:
+            book = Book.objects.get(id=book_id)
+            comments = Comment.objects.filter(book=book)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+        except Book.DoesNotExist:
+            return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class BookRatingCreateView(APIView):
     def post(self, request, pk):
@@ -66,7 +70,6 @@ class BookRatingCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class BookRatingDetailView(APIView):
     def get(self, request, pk):
