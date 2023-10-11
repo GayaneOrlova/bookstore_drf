@@ -19,8 +19,9 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookRatingDetailView, BookViewSet, CommentCreateView, GenreListAPIView, FavoriteView, FavoriteListView
+from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookRatingDetailView, BookViewSet, GenreListAPIView, FavoriteView, FavoriteListView
 from books.views import CommentListView
+from books.views import CreateCommentView
 from cart.views import AddToCartView, CartAPIView, UpdateCartItemView
 
 
@@ -29,13 +30,13 @@ urlpatterns = [
     path("", include("users.urls", namespace="users")),
     
     path('all-books/', BookListAPIView.as_view(), name='get-all-book'),
-    path('books/<pk>', BookViewSet.as_view({'get': 'retrieve'})),
+    path('books/<pk>/', BookViewSet.as_view({'get': 'retrieve'})),
     
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
     
     path('book-comment/<int:book_id>/', CommentListView.as_view(), name='comment-list-create'),
-    path('comment/create/<book_id>/', CommentCreateView.as_view(), name='comment-create'),
+    path('comments/create/', CreateCommentView.as_view(), name='create-comment'),
 
     path('book-rating/<int:pk>/', BookRatingDetailView.as_view(), name='book_rating'),
     path('book-rating/create/<int:pk>/', BookRatingCreateView.as_view(), name='book_rating'),

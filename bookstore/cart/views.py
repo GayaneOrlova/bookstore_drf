@@ -9,7 +9,7 @@ from cart.serializers import CartItemSerializer
 
 class CartAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get(self, request):
         user = request.user
         try: 
@@ -37,7 +37,9 @@ class UpdateCartItemView(APIView):
             if amount <= cart_item.book.store_amount:
                 cart_item.amount = amount
                 cart_item.save()
-                return Response("ok")
+                updated_cart_item = CartItem.objects.get(id=cart_item_id)
+                serializer = CartItemSerializer(updated_cart_item, context={'request': request})
+                return Response(serializer.data)
             else:
                 return Response("Cannot add more books than available", status=status.HTTP_400_BAD_REQUEST)
 
@@ -53,7 +55,6 @@ class AddToCartView(APIView):
     def post(self, request):
         book_id = request.data.get('id')
         user_id = request.user.id
-        
         
         try:
             cart = Cart.objects.get(user_id=user_id)

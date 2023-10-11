@@ -16,16 +16,7 @@ class Author(models.Model):
     
     def __str__(self):
         return self.name
-# class BookStatus(models.Model):
-#     available = models.BooleanField(default=True)
-#     store_amount = models.IntegerField(default=1)#
-#     book=models.ForeignKey("Book", on_delete=models.CASCADE)
 
-# class BookModelManager(models.Manager):
-#     def create(self, **kwargs: Any) -> Any:
-#         book= super().create(**kwargs)
-#         BookStatus.objects.create(book=book)
-#         return book
 
 class Book(models.Model):
     title=models.CharField(max_length=255)
@@ -58,7 +49,6 @@ class Comment(models.Model):
     book = models.ForeignKey(Book, related_name="comments", on_delete=models.CASCADE)
     body = models.TextField("Comment body")
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=False)
     class Meta:
         ordering = ("-created_at",)
