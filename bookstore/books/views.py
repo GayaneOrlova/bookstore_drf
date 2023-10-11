@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView, CreateAPIView
 from books.models import Author, Book, Comment, Genre, BookRating
-from books.serializers import AuthorSerializer, BookLikeSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
-from books.models import BookLike
+from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
+from books.models import BookFavorite
 from . import serializers
 
 class BookListAPIView(ListCreateAPIView):
@@ -83,8 +83,8 @@ class FavoriteListView(APIView):
     def get(self, request):
         user_id = request.user.id
         
-        favorite_items = BookLike.objects.filter(user_id=user_id)
-        serializer = BookLikeSerializer(favorite_items, many=True, context={'request': request})
+        favorite_items = BookFavorite.objects.filter(user_id=user_id)
+        serializer = BookFavoriteSerializer(favorite_items, many=True, context={'request': request})
         return Response(serializer.data)
 
 class FavoriteView(APIView):
@@ -100,12 +100,12 @@ class FavoriteView(APIView):
             return Response("Book does not exist", status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            book_like = BookLike.objects.get(user_id=user_id, book_id=book_id)
+            book_like = BookFavorite.objects.get(user_id=user_id, book_id=book_id)
             book_like.delete()
             return Response("Item removed from favorites", status=status.HTTP_200_OK)
-        except BookLike.DoesNotExist:
-            book_like = BookLike.objects.create(user_id=user_id, book_id=book_id)
-            serializer = BookLikeSerializer(book_like)
+        except BookFavorite.DoesNotExist:
+            book_like = BookFavorite.objects.create(user_id=user_id, book_id=book_id)
+            serializer = BookFavoriteSerializer(book_like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

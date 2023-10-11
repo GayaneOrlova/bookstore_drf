@@ -78,7 +78,7 @@ class BookRating(models.Model):
     def __str__(self):
         return f"Book {self.book.title} rated {self.rating} by User {self.user.username}"
 
-class BookLike(models.Model):
+class BookFavorite(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=True)
     

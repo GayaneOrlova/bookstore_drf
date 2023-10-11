@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from books.models import Book, BookRating, Comment, Genre
-from .models import BookLike
+from .models import BookFavorite, BookFavorite
 from users.serializers import CustomUserSerializer
 
 class BookSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class BookSerializer(serializers.ModelSerializer):
     def get_like(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            return BookLike.objects.filter(book=obj, user=request.user).exists()
+            return BookFavorite.objects.filter(book=obj, user=request.user).exists()
         return False
 
     def get_comments(self, obj):
@@ -85,8 +85,8 @@ class BookRatingCreateSerializer(serializers.ModelSerializer):
         model = BookRating
         fields = ['book', 'rating']
 
-class BookLikeSerializer(serializers.ModelSerializer):
+class BookFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BookLike
+        model = BookFavorite
         fields = "__all__"
 
