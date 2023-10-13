@@ -15,6 +15,7 @@ class BookSerializer(serializers.ModelSerializer):
     bestseller = serializers.BooleanField(default=False)
     image = serializers.ImageField(use_url=True)
     overall_rating = serializers.IntegerField()
+    rating = serializers.SerializerMethodField()
     store_amount = serializers.IntegerField()
     like = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
@@ -27,7 +28,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     def get_comments(self, obj):
         request = self.context.get('request')
-        if request and request.user.is_authenticated:
+        if request:
             comments = Comment.objects.filter(book=obj)
             serializer = CommentSerializer(comments, many=True)
             return serializer.data
@@ -42,6 +43,10 @@ class BookSerializer(serializers.ModelSerializer):
             except BookRating.DoesNotExist:
                 return None
         return None
+        
+
+
+
     class Meta:
         model = Book
         fields = "__all__"

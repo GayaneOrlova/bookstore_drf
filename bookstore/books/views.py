@@ -14,7 +14,7 @@ class BookListAPIView(ListCreateAPIView):
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
-        serializer=BookSerializer(books, many=True)
+        serializer=BookSerializer(books, many=True, context={"request": request})
         return Response(serializer.data)
     
     def retrieve(self, request, pk):
@@ -51,6 +51,8 @@ class CreateCommentView(APIView):
         return Response(serializer.errors, status=400)
 
 class BookRatingCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, pk):
         book = Book.objects.get(pk=pk)
         user = request.user
@@ -77,7 +79,6 @@ class BookRatingDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except BookRating.DoesNotExist:
             return Response({"rating": None})
-
 
 class FavoriteListView(APIView):
     def get(self, request):
@@ -107,5 +108,6 @@ class FavoriteView(APIView):
             book_like = BookFavorite.objects.create(user_id=user_id, book_id=book_id)
             serializer = BookFavoriteSerializer(book_like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 

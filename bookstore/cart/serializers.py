@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from books.serializers import BookSerializer
 from books.models import Book
-from cart.models import Cart, CartItem
+from cart.models import  CartItem
 
 class CartItemSerializer(serializers.ModelSerializer):
     book_name = serializers.CharField(source="book.title")

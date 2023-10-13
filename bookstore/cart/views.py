@@ -23,6 +23,8 @@ class CartAPIView(APIView):
         return Response({"items": serializer.data, "total_price": total_price})
 
 class UpdateCartItemView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
         cart_item_id = request.data.get('id')
         amount = request.data.get('amount')

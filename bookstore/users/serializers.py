@@ -1,13 +1,43 @@
+from ipaddress import summarize_address_range
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from cart.models import  CartItem, Cart
+from django.db.models import Sum
+
 
 from .models import Avatar, CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    cart_items_count = serializers.SerializerMethodField()
+
+    def get_cart_items_count(self, obj):
+        cart_items = CartItem.objects.filter(cart__user=obj).values()
+        print(cart_items, 'cart_items')
+        total_amount = cart_items.aggregate(total_amount=Sum('amount'))['total_amount']
+
+        return total_amount
     class Meta:
         model = CustomUser
-        fields = ("id", "username", "email")
+        fields = ("id", "username", "email", "cart_items_count")
+
+
+
+    # cart_items_count = serializers.SerializerMethodField()
+    # def get_cart_items_count(self, obj):
+    #     return CartItem.objects.filter(cart__user=obj).count()
+
+    # # cart = serializers.SerializerMethodField()
+
+    # # def get_cart(self, obj):
+    # #     request = self.context.get('request')
+    # #     if request and request.user.is_authenticated:
+    # #         return Cart.objects.get(cart=obj, user=request.user)
+    # #     return False
+
+    # class Meta:
+    #     model = CustomUser
+    #     fields = ("id", "username", "email", "get_cart_items_count")
 
 class UserRegisterationSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(max_length=128, write_only=True)

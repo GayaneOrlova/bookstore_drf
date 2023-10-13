@@ -33,7 +33,6 @@ class Book(models.Model):
     body = models.TextField("Book description")
     store_amount = models.IntegerField(default=1)#
     
-    
     @property
     def overall_rating(self):
         ratings = BookRating.objects.all().filter(book=self.id)
