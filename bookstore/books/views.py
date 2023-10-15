@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from books.models import Author, Book, Comment, Genre, BookFavorite, BookRating
 from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
+from django.db.models import Q
 
 
 class GenreFilter(BaseFilterBackend):
@@ -14,11 +15,25 @@ class GenreFilter(BaseFilterBackend):
         if genre:
             queryset = queryset.filter(genre__name=genre)
         return queryset
+        
+class PriceRangeFilterBackend(BaseFilterBackend):
+        def filter_queryset(self, request, queryset, view):
+            min_price = request.query_params.get('min_price')
+            max_price = request.query_params.get('max_price')
+            if min_price and max_price:
+                queryset = queryset.filter(price__range=(min_price, max_price))
+            elif min_price:
+                queryset = queryset.filter(price__gte=min_price)
+            elif max_price:
+                queryset = queryset.filter(price__lte=max_price)
+            return queryset
+
+
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
     pagination_class = PageNumberPagination
-    filter_backends = [GenreFilter, OrderingFilter]
+    filter_backends = [GenreFilter, OrderingFilter, PriceRangeFilterBackend]
     ordering_fields = ['price', 'title', 'author', 'overall_rating', 'published_at']
 
 class BookViewSet(viewsets.ViewSet):
