@@ -7,15 +7,21 @@ from rest_framework.generics import ListCreateAPIView
 from books.models import Author, Book, Comment, Genre, BookFavorite, BookRating
 from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
 
+
+class GenreFilter(BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        genre = request.query_params.get('genre')
+        if genre:
+            queryset = queryset.filter(genre__name=genre)
+        return queryset
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
     pagination_class = PageNumberPagination
+    filter_backends = [GenreFilter]
 
 
 
-
-    
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
         books=Book.objects.all()
