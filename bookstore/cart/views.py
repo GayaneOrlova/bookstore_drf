@@ -6,7 +6,6 @@ from books.models import Book
 from cart.models import Cart, CartItem
 from cart.serializers import CartItemSerializer
 
-
 class CartAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -35,7 +34,6 @@ class UpdateCartItemView(APIView):
             return Response("CartItem does not exist", status=status.HTTP_404_NOT_FOUND)
 
         if amount > 0:
-            # cart_item = CartItem.objects.get(id = cart_item_id)
             if amount <= cart_item.book.store_amount:
                 cart_item.amount = amount
                 cart_item.save()

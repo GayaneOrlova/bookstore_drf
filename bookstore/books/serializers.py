@@ -43,10 +43,6 @@ class BookSerializer(serializers.ModelSerializer):
             except BookRating.DoesNotExist:
                 return None
         return None
-        
-
-
-
     class Meta:
         model = Book
         fields = "__all__"

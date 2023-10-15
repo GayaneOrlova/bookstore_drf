@@ -5,6 +5,7 @@ from cart.models import  CartItem
 
 class CartItemSerializer(serializers.ModelSerializer):
     book_name = serializers.CharField(source="book.title")
+    book_author = serializers.CharField(source="book.author")
     id = serializers.IntegerField()
     amount = serializers.IntegerField(default=1)
     price = serializers.DecimalField(max_digits=5, decimal_places=2)
@@ -16,4 +17,4 @@ class CartItemSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(image_url)
     class Meta:
         model = CartItem
-        fields = ['amount', 'price', 'book_name', 'id', 'book_image']
+        fields = ['amount', 'price', 'book_name', 'id', 'book_image', "book_author"]

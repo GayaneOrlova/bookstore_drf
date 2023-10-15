@@ -1,11 +1,9 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListCreateAPIView, CreateAPIView
-from books.models import Author, Book, Comment, Genre, BookRating
+from rest_framework.generics import ListCreateAPIView
+from books.models import Author, Book, Comment, Genre, BookFavorite, BookRating
 from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
-from books.models import BookFavorite
-from . import serializers
 
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
@@ -67,8 +65,6 @@ class BookRatingCreateView(APIView):
             serializer.save(book=book, user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class BookRatingDetailView(APIView):
     def get(self, request, pk):
         book = Book.objects.get(pk=pk)
@@ -108,6 +104,5 @@ class FavoriteView(APIView):
             book_like = BookFavorite.objects.create(user_id=user_id, book_id=book_id)
             serializer = BookFavoriteSerializer(book_like)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 
