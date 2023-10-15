@@ -1,6 +1,6 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.filters import BaseFilterBackend
+from rest_framework.filters import BaseFilterBackend, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
@@ -18,9 +18,8 @@ class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
     pagination_class = PageNumberPagination
-    filter_backends = [GenreFilter]
-
-
+    filter_backends = [GenreFilter, OrderingFilter]
+    ordering_fields = ['price', 'title', 'author', 'overall_rating', 'published_at']
 
 class BookViewSet(viewsets.ViewSet):
     def list(self, request):
