@@ -46,7 +46,7 @@ class UserLoginAPIView(GenericAPIView):
             data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogoutAPIView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
@@ -59,18 +59,29 @@ class UserLogoutAPIView(GenericAPIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-            
+
+
 class ChangePasswordView(APIView):
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            if not request.user.check_password(serializer.validated_data.get('old_password')):
+                return Response({'error': 'Invalid old password'}, status=status.HTTP_400_BAD_REQUEST)
             serializer.update(request.user, serializer.validated_data)
             return Response({'message': 'Password changed successfully'})
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserAPIView(RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.CustomUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+class UserInfoUpdateAPIView(RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.CustomUserUpdateSerializer
 
     def get_object(self):
         return self.request.user

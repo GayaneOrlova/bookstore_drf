@@ -16,7 +16,7 @@ class BookSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     overall_rating = serializers.IntegerField()
     rating = serializers.SerializerMethodField()
-    store_amount = serializers.IntegerField()
+    # store_amount = serializers.IntegerField()
     like = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
 
@@ -91,3 +91,30 @@ class BookFavoriteSerializer(serializers.ModelSerializer):
         model = BookFavorite
         fields = "__all__"
 
+class FavoriteListSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source="book.title")
+    author = serializers.CharField(source="book.author")
+    id = serializers.IntegerField(source="book.id")
+    # store_amount = serializers.IntegerField(source="book.store_amount", default=1)
+    price = serializers.DecimalField(source="book.price", max_digits=5, decimal_places=2)
+    overall_rating = serializers.DecimalField(source="book.overall_rating", max_digits=5, decimal_places=2)
+    image = serializers.SerializerMethodField()
+    available = serializers.BooleanField(source="book.available")
+    like = serializers.SerializerMethodField()
+
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        image_url = obj.book.image.url
+        return request.build_absolute_uri(image_url)
+        
+    def get_like(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return BookFavorite.objects.filter(book=obj.book, user=request.user).exists()
+        return False
+
+    class Meta:
+        model = BookFavorite
+        fields = ['price', 'title', 'id', 'image', "author", "overall_rating", "available", "like"]
+        

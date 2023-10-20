@@ -12,8 +12,9 @@ urlpatterns = [
     path("logout/", views.UserLogoutAPIView.as_view(), name="logout-user"),
     path("", views.UserAPIView.as_view(), name="user-info"),
     path("me/", views.UserAPIView.as_view(), name="tokens"),
-    path("change-userinfo/", views.UserAPIView.as_view(), name="change_userinfo"),
+    path("change-userinfo/", views.UserInfoUpdateAPIView.as_view(), name="change_userinfo"),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('change-avatar/', views.AvatarView.as_view(), name= 'get_avatar'),
     path("avatar/", views.UserAvatarAPIView.as_view(), name="user_avatar"),
+    
 ]

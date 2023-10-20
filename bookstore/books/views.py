@@ -1,21 +1,39 @@
+from django.shortcuts import render
 from rest_framework import permissions, status, viewsets
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.filters import BaseFilterBackend, OrderingFilter
+from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from books.models import Author, Book, Comment, Genre, BookFavorite, BookRating
-from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer
+from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer, FavoriteListSerializer
 from django.db.models import Q
-
 
 class GenreFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
-        genre = request.query_params.get('genre')
-        if genre:
-            queryset = queryset.filter(genre__name=genre)
+        genres = request.GET.getlist('genre')
+        if genres:
+            q_objects = Q()
+            for genre in genres:
+                q_objects |= Q(genre__name=genre)
+            queryset = queryset.filter(q_objects).distinct()
         return queryset
-        
+
+class AllBooksAPIView(APIView):
+    def get(self, request):
+        genres = request.GET.getlist('genre')
+        queryset = Book.objects.all()
+        if genres:
+            q_objects = Q()
+            for genre in genres:
+                q_objects |= Q(genre__name=genre)
+            queryset = queryset.filter(q_objects)
+        serializer = BookSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+
 class PriceRangeFilterBackend(BaseFilterBackend):
         def filter_queryset(self, request, queryset, view):
             min_price = request.query_params.get('min_price')
@@ -28,7 +46,6 @@ class PriceRangeFilterBackend(BaseFilterBackend):
                 queryset = queryset.filter(price__lte=max_price)
             return queryset
 
-
 class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
@@ -37,19 +54,27 @@ class BookListAPIView(ListCreateAPIView):
     ordering_fields = ['price', 'title', 'author', 'overall_rating', 'published_at']
 
 class BookViewSet(viewsets.ViewSet):
-    def list(self, request):
-        books=Book.objects.all()
-        serializer=BookSerializer(books, many=True, context={"request": request})
-        return Response(serializer.data)
-    
     def retrieve(self, request, pk):
         book=Book.objects.get(pk=pk)
         serializer=BookSerializer(book, context={"request": request})
         return Response(serializer.data)
+        
+class BookRecommendationView(APIView):
+    def get_queryset(self):
+        return Book.objects.filter(recommendation=True)
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = BookSerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
 
 class GenreListAPIView(ListCreateAPIView):
-    queryset=Genre.objects.all()
-    serializer_class=GenreSerializer
+    # queryset=Genre.objects.all()
+    # serializer_class=GenreSerializer
+    def get(self, request):
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        return Response(serializer.data)
 
 class AuthorListAPIView(ListCreateAPIView):
     queryset=Author.objects.all()
@@ -64,6 +89,7 @@ class CommentListView(APIView):
             return Response(serializer.data)
         except Book.DoesNotExist:
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class CreateCommentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -108,8 +134,9 @@ class FavoriteListView(APIView):
         user_id = request.user.id
         
         favorite_items = BookFavorite.objects.filter(user_id=user_id)
-        serializer = BookFavoriteSerializer(favorite_items, many=True, context={'request': request})
+        serializer = FavoriteListSerializer(favorite_items, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class FavoriteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -133,3 +160,11 @@ class FavoriteView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class SearchAPIView(APIView):
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'author__name']
+
+    def get(self, request):
+        queryset = Book.objects.all()
+        serializer = BookSerializer(queryset, many=True)
+        return Response(serializer.data)

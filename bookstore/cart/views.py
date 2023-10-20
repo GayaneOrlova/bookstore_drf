@@ -34,19 +34,19 @@ class UpdateCartItemView(APIView):
             return Response("CartItem does not exist", status=status.HTTP_404_NOT_FOUND)
 
         if amount > 0:
-            if amount <= cart_item.book.store_amount:
-                cart_item.amount = amount
-                cart_item.save()
-                updated_cart_item = CartItem.objects.get(id=cart_item_id)
-                serializer = CartItemSerializer(updated_cart_item, context={'request': request})
-                return Response(serializer.data)
-            else:
-                return Response("Cannot add more books than available", status=status.HTTP_400_BAD_REQUEST)
+            # if amount <= cart_item.book.store_amount:
+            cart_item.amount = amount
+            cart_item.save()
+            updated_cart_item = CartItem.objects.get(id=cart_item_id)
+            serializer = CartItemSerializer(updated_cart_item, context={'request': request})
+            return Response(serializer.data)
+            # else:
+            #     return Response("Cannot add more books than available", status=status.HTTP_400_BAD_REQUEST)
 
         if amount == 0:
             cart_item = CartItem.objects.get(id = cart_item_id)
             cart_item.delete()
-            return Response('delete')
+            return Response('CartItem deleted')
             
         raise RuntimeError("not correct")
 
@@ -67,8 +67,8 @@ class AddToCartView(APIView):
             cart_item = CartItem.objects.get(cart=cart, book=book)
             cart_item.amount += 1
             cart_item.save()
-            return Response("ok")
+            
         except CartItem.DoesNotExist:
             cart_item = CartItem.objects.create(cart=cart, book=book)
-            return Response("ok")
-            
+        serializer = CartItemSerializer(cart_item, context={'request': request})
+        return Response(serializer.data)            

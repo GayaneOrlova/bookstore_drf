@@ -31,7 +31,6 @@ class Book(models.Model):
     bestseller = models.BooleanField(default=False)
     image = models.ImageField(upload_to='books/%Y/%m/%d', blank=True)
     body = models.TextField("Book description")
-    store_amount = models.IntegerField(default=1)#
     
     @property
     def overall_rating(self):

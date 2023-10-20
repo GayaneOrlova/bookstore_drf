@@ -22,6 +22,8 @@ from django.conf.urls.static import static
 from books.views import AuthorListAPIView, BookListAPIView, BookRatingCreateView, BookRatingDetailView, BookViewSet, GenreListAPIView, FavoriteView, FavoriteListView
 from books.views import CommentListView
 from books.views import CreateCommentView
+from books.views import BookRecommendationView
+from books.views import SearchAPIView
 from cart.views import AddToCartView, CartAPIView, UpdateCartItemView
 
 
@@ -31,6 +33,8 @@ urlpatterns = [
     
     path('all-books/', BookListAPIView.as_view(), name='get-all-book'),
     path('books/<pk>/', BookViewSet.as_view({'get': 'retrieve'})),
+    
+    path('recommended-books/', BookRecommendationView.as_view(), name='book-list-recommendation'),
     
     path('authors/', AuthorListAPIView.as_view(), name='author-list'),
     path('genres/', GenreListAPIView.as_view(), name='genre-list'),
@@ -47,5 +51,7 @@ urlpatterns = [
 
     path('favorite-change/', FavoriteView.as_view(), name='add-to-favorite'),
     path('favorite-list/', FavoriteListView.as_view(), name='favorite-list'),
+    
+    # path("api/books/?search=<query>/", SearchAPIView.as_view(), name="search"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
