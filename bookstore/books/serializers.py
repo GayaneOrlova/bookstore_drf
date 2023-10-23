@@ -16,7 +16,6 @@ class BookSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
     overall_rating = serializers.IntegerField()
     rating = serializers.SerializerMethodField()
-    # store_amount = serializers.IntegerField()
     like = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
 
@@ -95,7 +94,6 @@ class FavoriteListSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="book.title")
     author = serializers.CharField(source="book.author")
     id = serializers.IntegerField(source="book.id")
-    # store_amount = serializers.IntegerField(source="book.store_amount", default=1)
     price = serializers.DecimalField(source="book.price", max_digits=5, decimal_places=2)
     overall_rating = serializers.DecimalField(source="book.overall_rating", max_digits=5, decimal_places=2)
     image = serializers.SerializerMethodField()

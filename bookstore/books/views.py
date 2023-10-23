@@ -20,20 +20,6 @@ class GenreFilter(BaseFilterBackend):
             queryset = queryset.filter(q_objects).distinct()
         return queryset
 
-class AllBooksAPIView(APIView):
-    def get(self, request):
-        genres = request.GET.getlist('genre')
-        queryset = Book.objects.all()
-        if genres:
-            q_objects = Q()
-            for genre in genres:
-                q_objects |= Q(genre__name=genre)
-            queryset = queryset.filter(q_objects)
-        serializer = BookSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
-
 class PriceRangeFilterBackend(BaseFilterBackend):
         def filter_queryset(self, request, queryset, view):
             min_price = request.query_params.get('min_price')
@@ -50,8 +36,10 @@ class BookListAPIView(ListCreateAPIView):
     queryset=Book.objects.all()
     serializer_class=BookSerializer
     pagination_class = PageNumberPagination
-    filter_backends = [GenreFilter, OrderingFilter, PriceRangeFilterBackend]
+    filter_backends = [GenreFilter, OrderingFilter, PriceRangeFilterBackend, SearchFilter]
     ordering_fields = ['price', 'title', 'author', 'overall_rating', 'published_at']
+    search_fields = ['title', 'author__name']
+
 
 class BookViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk):
@@ -69,8 +57,6 @@ class BookRecommendationView(APIView):
         return Response(serializer.data)
 
 class GenreListAPIView(ListCreateAPIView):
-    # queryset=Genre.objects.all()
-    # serializer_class=GenreSerializer
     def get(self, request):
         genres = Genre.objects.all()
         serializer = GenreSerializer(genres, many=True)
