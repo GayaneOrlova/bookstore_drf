@@ -7,10 +7,23 @@ For more information on this file, see
 https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
+# import os
+
+# from django.core.asgi import get_asgi_application
+
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bookstore.settings')
+
+# application = get_asgi_application()
+
 import os
 
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bookstore.settings')
+django_asgi_app = get_asgi_application()
 
-application = get_asgi_application()
+import socketio
+from books.sockets import sio
+
+
+application = socketio.ASGIApp(sio, django_asgi_app)

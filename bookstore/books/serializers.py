@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from books.models import Book, BookRating, Comment, Genre
 from .models import BookFavorite, BookFavorite
-from users.serializers import CustomUserSerializer
 
 class BookSerializer(serializers.ModelSerializer):
     title=serializers.CharField()
@@ -99,7 +98,6 @@ class FavoriteListSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     available = serializers.BooleanField(source="book.available")
     like = serializers.SerializerMethodField()
-
 
     def get_image(self, obj):
         request = self.context.get('request')

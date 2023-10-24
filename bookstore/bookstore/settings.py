@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'books.apps.BooksConfig',
     'cart.apps.CartConfig',
     'users.apps.UsersConfig',
-     'django_filters',
+    'django_filters',
     'corsheaders', # for CORS
 ]
 
@@ -79,6 +79,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'bookstore.wsgi.application'
 
