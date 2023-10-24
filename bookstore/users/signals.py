@@ -7,7 +7,7 @@ from .models import Avatar
 User = get_user_model()
 
 @receiver(post_save, sender=User)
-def create_avatar(sender, instance, created, **kwargs):
+def create_avatar(user, instance, created, **kwargs):
     if created:
         Avatar.objects.create(user=instance)
 
