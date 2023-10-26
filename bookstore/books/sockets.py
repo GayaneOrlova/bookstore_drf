@@ -1,3 +1,4 @@
+from engineio import AsyncServer
 import socketio
 import json
 from django.shortcuts import get_object_or_404
@@ -15,20 +16,23 @@ async def connect(sid, env, auth):
     print('lalalla')
     print(sid)
     print(env)
-    print(auth)
+    print('!!!!!!',auth)
 
     # if auth:
+    #     # token = auth["token"]
     #     book_id = auth["book_id"]
     #     print("SocketIO connect")
     #     sio.enter_room(sid, book_id)
-    #     await sio.emit("connect", f"Connected as {sid}")
+    #     print("67890", book_id)
+    #     await sio.enter_room(sid, book_id)
+
+    #     await sio.emit("connected", f"Connected as {sid}")
     # else:
     #     raise ConnectionRefusedError("No auth")
-    book_id = 3
+    book_id = 8
     print("SocketIO connect")
     await sio.enter_room(sid, book_id)
-    await sio.emit("connect", f"Connected as {sid}")
-
+    await sio.emit("connected", f"Connected as {sid}")
 
 def store_comment(data):
     print(data)
@@ -58,6 +62,5 @@ async def print_message(sid, data):
 
 @sio.on("disconnect")
 async def disconnect(sid):
-    sio.leave_room(sid)
     print("SocketIO disconnect")
 
