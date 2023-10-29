@@ -29,7 +29,7 @@ async def connect(sid, env, auth):
     #     await sio.emit("connected", f"Connected as {sid}")
     # else:
     #     raise ConnectionRefusedError("No auth")
-    book_id = 8
+    book_id = 3
     print("SocketIO connect")
     await sio.enter_room(sid, book_id)
     await sio.emit("connected", f"Connected as {sid}")

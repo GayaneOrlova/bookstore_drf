@@ -1,6 +1,7 @@
 import datetime
 from typing import Any
 from django.db import models
+from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import Avatar, CustomUser
 from django.core.exceptions import ObjectDoesNotExist
@@ -65,6 +66,19 @@ class Comment(models.Model):
     def author(self):
         author = self.user.username
         return author
+         
+    def formatted_date(self):
+        time_diff = timezone.now() - self.created_at
+
+        if time_diff < timezone.timedelta(minutes=60):
+            minutes = int(time_diff.total_seconds() // 60)
+            return f"Left a comment {minutes} minutes ago"
+        elif time_diff < timezone.timedelta(days=1):
+            hours = int(time_diff.total_seconds() // 3600)
+            return f"Left a comment {hours} hours ago"
+        else:
+            days = int(time_diff.total_seconds() // (24 * 3600))
+            return f"Left a comment {days} days ago"
 
 class BookRating(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, null=False, blank=True)

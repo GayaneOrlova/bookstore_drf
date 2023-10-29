@@ -60,10 +60,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.CharField()
     avatar_url = serializers.ImageField()
+    formatted_date = serializers.CharField()
     
     class Meta:
         model = Comment
-        fields = ['book', 'body', 'author', 'avatar_url', 'created_at']
+        fields = ['book', 'body', 'author', 'avatar_url', 'formatted_date']
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -72,7 +73,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     body=serializers.CharField()
     class Meta:
         model = Comment
-        fields = ['book', 'body', 'author', 'avatar_url', 'created_at']
+        fields = ['book', 'body', 'author', 'avatar_url', 'created_at', 'formatted_date']
 
 class BookRatingSerializer(serializers.ModelSerializer):
     class Meta:
