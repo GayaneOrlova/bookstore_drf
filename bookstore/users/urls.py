@@ -15,6 +15,8 @@ urlpatterns = [
     path("change-userinfo/", views.UserInfoUpdateAPIView.as_view(), name="change_userinfo"),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('change-avatar/', views.AvatarView.as_view(), name= 'get_avatar'),
-    path("avatar/", views.UserAvatarAPIView.as_view(), name="user_avatar"),
+    path("avatar/", views.UserAvatarAPIView.as_view(), name="user_avatar"),   
     
+    path("tokens/", views.UserTokensFirebase.as_view(), name="user_tokens_firebase"),
+
 ]

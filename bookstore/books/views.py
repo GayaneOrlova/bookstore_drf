@@ -10,6 +10,16 @@ from books.models import Author, Book, Comment, Genre, BookFavorite, BookRating
 from books.serializers import AuthorSerializer, BookFavoriteSerializer, BookSerializer, BookRatingSerializer, CommentSerializer,CommentCreateSerializer, GenreSerializer, FavoriteListSerializer
 from django.db.models import Q
 
+from firebase_admin import messaging
+from firebase_admin.messaging import (Message, Notification)
+
+from more_itertools import batched
+
+from bookstore.settings import AUTH_USER_MODEL
+from users.models import FirebaseToken
+
+MAX_MESSAGES_PER_BATCH = 500
+
 class GenreFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         genres = request.GET.getlist('genre')
@@ -84,8 +94,27 @@ class CreateCommentView(APIView):
         serializer = CommentCreateSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user)
+            
+            send_push(serializer.instance)
+            
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+def send_push(comment):
+    tokens = FirebaseToken.objects.exclude(user = comment.author)
+    messages = []
+    for token in tokens:
+        messages.append(Message(token=token), notification=Notification(title='Test push', body=comment.author))
+        # comment.author - сделать строку
+    responses = []
+    
+    for batch_messages in batched(messages, MAX_MESSAGES_PER_BATCH):
+        responses.extend(messaging.send_all(list(batch_messages)).responses)
+        
+    response = messaging.BatchResponse(responses)
+
+
 
 class BookRatingCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]

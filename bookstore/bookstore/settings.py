@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from firebase_admin import initialize_app as init_firebase_app
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -176,3 +178,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '/Users/gayaneorlova/bookstore_drf/bookstore/bookstore/bookstore-12893-firebase-adminsdk-wgt9x-46f783e36d.json'
+
+FIREBASE_APP = init_firebase_app()

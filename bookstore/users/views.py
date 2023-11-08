@@ -1,15 +1,25 @@
+from ast import List
+from http.client import responses
+from logging.handlers import WatchedFileHandler
+from typing import Any
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import AvatarSerializer, ChangePasswordSerializer
 from rest_framework.views import APIView
+import firebase_admin
+from firebase_admin import messaging
+from bookstore.settings import AUTH_USER_MODEL
+from firebase_admin import messaging
+from firebase_admin.messaging import (Message)
+from firebase_admin.messaging import Notification
 
 from . import serializers
-from .models import Avatar
+from .models import Avatar, CustomUser, FirebaseToken
 
 User = get_user_model()
 
@@ -22,6 +32,7 @@ class UserRegisterationAPIView(GenericAPIView):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            
             token = RefreshToken.for_user(user)
             data = {"user": serializer.data}
 
@@ -47,6 +58,21 @@ class UserLoginAPIView(GenericAPIView):
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "Invalid email or password"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserTokensFirebase(GenericAPIView):
+        
+    def post(self, request, *args, **kwargs):
+            access_token = request.data["access"]
+            # взять из хедера
+            firebase_token = request.data["firebase"]
+
+            token = AccessToken(access_token)
+            user = CustomUser.objects.get(id = token['user_id'])
+            FirebaseToken.objects.get_or_create(user= user, firebase_token = firebase_token)
+            
+            return Response(status=status.HTTP_200_OK)
+    
 
 class UserLogoutAPIView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
