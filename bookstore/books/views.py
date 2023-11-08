@@ -105,15 +105,14 @@ def send_push(comment):
     tokens = UserDevice.objects.filter(type=DeviceTypes.ANDROID).exclude(user = comment.user)
     messages = []
     for token in tokens:
-        print('!!!!',token.firebase_token, type(token.firebase_token))
-        messages.append(Message(token=token.firebase_token, notification=Notification(title='Test push', body=comment.body)))
+        messages.append(Message(token=token.firebase_token, notification=Notification(title=f"User {comment.user.username} left a comment on the book {comment.book.title}"
+, body=comment.body)))
     responses = []
     
     for batch_messages in batched(messages, MAX_MESSAGES_PER_BATCH):
         responses.extend(messaging.send_all(list(batch_messages)).responses)
         
     response = messaging.BatchResponse(responses)
-    print('response', f'success_count: {response.success_count}; 'f'failure_count: {response.failure_count}')
 
 
 

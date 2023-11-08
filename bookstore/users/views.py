@@ -58,9 +58,8 @@ class UserLoginAPIView(GenericAPIView):
 
 
 class UserTokensFirebase(GenericAPIView):
-        
     def post(self, request, *args, **kwargs):
-            firebase_token = request.data["firebase"]
+            firebase_token = request.data["fcmToken"]
             print('request.auth', request.auth)
 
             token = request.auth
