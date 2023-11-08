@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework import permissions, status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
@@ -16,7 +15,8 @@ from firebase_admin.messaging import (Message, Notification)
 from more_itertools import batched
 
 from bookstore.settings import AUTH_USER_MODEL
-from users.models import FirebaseToken
+from users.models import DeviceTypes
+from users.models import UserDevice
 
 MAX_MESSAGES_PER_BATCH = 500
 
@@ -102,17 +102,18 @@ class CreateCommentView(APIView):
 
 
 def send_push(comment):
-    tokens = FirebaseToken.objects.exclude(user = comment.author)
+    tokens = UserDevice.objects.filter(type=DeviceTypes.ANDROID).exclude(user = comment.user)
     messages = []
     for token in tokens:
-        messages.append(Message(token=token), notification=Notification(title='Test push', body=comment.author))
-        # comment.author - сделать строку
+        print('!!!!',token.firebase_token, type(token.firebase_token))
+        messages.append(Message(token=token.firebase_token, notification=Notification(title='Test push', body=comment.body)))
     responses = []
     
     for batch_messages in batched(messages, MAX_MESSAGES_PER_BATCH):
         responses.extend(messaging.send_all(list(batch_messages)).responses)
         
     response = messaging.BatchResponse(responses)
+    print('response', f'success_count: {response.success_count}; 'f'failure_count: {response.failure_count}')
 
 
 

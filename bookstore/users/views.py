@@ -1,6 +1,5 @@
 from ast import List
 from http.client import responses
-from logging.handlers import WatchedFileHandler
 from typing import Any
 from django.contrib.auth import get_user_model
 from rest_framework import status
@@ -15,11 +14,9 @@ import firebase_admin
 from firebase_admin import messaging
 from bookstore.settings import AUTH_USER_MODEL
 from firebase_admin import messaging
-from firebase_admin.messaging import (Message)
-from firebase_admin.messaging import Notification
 
 from . import serializers
-from .models import Avatar, CustomUser, FirebaseToken
+from .models import Avatar, CustomUser, DeviceTypes, UserDevice
 
 User = get_user_model()
 
@@ -63,13 +60,12 @@ class UserLoginAPIView(GenericAPIView):
 class UserTokensFirebase(GenericAPIView):
         
     def post(self, request, *args, **kwargs):
-            access_token = request.data["access"]
-            # взять из хедера
             firebase_token = request.data["firebase"]
+            print('request.auth', request.auth)
 
-            token = AccessToken(access_token)
+            token = request.auth
             user = CustomUser.objects.get(id = token['user_id'])
-            FirebaseToken.objects.get_or_create(user= user, firebase_token = firebase_token)
+            UserDevice.objects.get_or_create(type=DeviceTypes.ANDROID, user= user, firebase_token = firebase_token)
             
             return Response(status=status.HTTP_200_OK)
     

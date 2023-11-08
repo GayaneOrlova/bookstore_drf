@@ -63,6 +63,7 @@ class Comment(models.Model):
     def __str__(self):
         return f"{self.body[:10]} by User {self.user.username}"
         
+    @property    
     def author(self):
         author = self.user.username
         return author
