@@ -53,6 +53,7 @@ class BookListAPIView(ListCreateAPIView):
 
 class BookViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk):
+        
         book=Book.objects.get(pk=pk)
         serializer=BookSerializer(book, context={"request": request})
         return Response(serializer.data)
@@ -81,7 +82,8 @@ class CommentListView(APIView):
         try:
             book = Book.objects.get(id=book_id)
             comments = Comment.objects.filter(book=book)
-            serializer = CommentSerializer(comments, many=True)
+            serializer = CommentSerializer(comments, many=True, context={'request': request})
+            
             return Response(serializer.data)
         except Book.DoesNotExist:
             return Response({"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -106,14 +108,13 @@ def send_push(comment):
     messages = []
     for token in tokens:
         messages.append(Message(token=token.firebase_token, notification=Notification(title=f"User {comment.user.username} left a comment on the book {comment.book.title}"
-, body=comment.body)))
+, body=comment.body), data={"comment_type": "comment_notification", "bookId": str(comment.book.id)}))
     responses = []
     
     for batch_messages in batched(messages, MAX_MESSAGES_PER_BATCH):
         responses.extend(messaging.send_all(list(batch_messages)).responses)
         
     response = messaging.BatchResponse(responses)
-
 
 
 class BookRatingCreateView(APIView):
@@ -151,7 +152,6 @@ class FavoriteListView(APIView):
         favorite_items = BookFavorite.objects.filter(user_id=user_id)
         serializer = FavoriteListSerializer(favorite_items, many=True, context={'request': request})
         return Response(serializer.data)
-
 
 class FavoriteView(APIView):
     permission_classes = [permissions.IsAuthenticated]

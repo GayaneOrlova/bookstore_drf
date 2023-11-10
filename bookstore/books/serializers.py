@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from books.models import Book, BookRating, Comment, Genre
 from .models import BookFavorite, BookFavorite
+from django.contrib.sites.shortcuts import get_current_site
 
 class BookSerializer(serializers.ModelSerializer):
     title=serializers.CharField()
@@ -28,7 +29,7 @@ class BookSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request:
             comments = Comment.objects.filter(book=obj)
-            serializer = CommentSerializer(comments, many=True)
+            serializer = CommentSerializer(comments, many=True, context ={'request': request})
             return serializer.data
         return False
     
@@ -59,8 +60,15 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.CharField()
-    avatar_url = serializers.ImageField()
+    avatar_url = serializers.SerializerMethodField()
     formatted_date = serializers.CharField()
+    
+    def get_avatar_url(self, obj):
+        request = self.context.get('request')
+        current_site = get_current_site(request)
+        avatar_url = obj.avatar_url
+        user_avatar_abs_url = f"{request.scheme}://{current_site}/media/{avatar_url}"
+        return user_avatar_abs_url
     
     class Meta:
         model = Comment
@@ -69,8 +77,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentCreateSerializer(serializers.ModelSerializer):
     author = serializers.CharField(required=False )
-    avatar_url = serializers.ImageField(required=False )
+    avatar_url = serializers.ImageField(required=False)
     body=serializers.CharField()
+
     class Meta:
         model = Comment
         fields = ['book', 'body', 'author', 'avatar_url', 'created_at', 'formatted_date']

@@ -60,8 +60,6 @@ class UserLoginAPIView(GenericAPIView):
 class UserTokensFirebase(GenericAPIView):
     def post(self, request, *args, **kwargs):
             firebase_token = request.data["fcmToken"]
-            print('request.auth', request.auth)
-
             token = request.auth
             user = CustomUser.objects.get(id = token['user_id'])
             UserDevice.objects.get_or_create(type=DeviceTypes.ANDROID, user= user, firebase_token = firebase_token)
@@ -86,7 +84,7 @@ class ChangePasswordView(APIView):
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            if not request.user.check_password(serializer.validated_data.get('old_password')):
+            if not request.user.check_password(serializer.validated_data.get('password')):
                 return Response({'error': 'Invalid old password'}, status=status.HTTP_400_BAD_REQUEST)
             serializer.update(request.user, serializer.validated_data)
             return Response({'message': 'Password changed successfully'})

@@ -14,7 +14,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def get_cart_items_count(self, obj):
         cart_items = CartItem.objects.filter(cart__user=obj).values()
-        print(cart_items, 'cart_items')
         total_amount = cart_items.aggregate(total_amount=Sum('amount'))['total_amount']
         return total_amount
         

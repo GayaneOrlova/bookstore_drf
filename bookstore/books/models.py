@@ -50,7 +50,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False, blank=False)
     class Meta:
-        ordering = ("-created_at",)
+        ordering = ("created_at",)
         
     @property
     def avatar_url(self):

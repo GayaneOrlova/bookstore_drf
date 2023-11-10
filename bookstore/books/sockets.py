@@ -13,10 +13,10 @@ sio = socketio.AsyncServer(
 
 @sio.on("connect")
 async def connect(sid, env, auth):
-    print('lalalla')
-    print(sid)
-    print(env)
-    print('!!!!!!',auth)
+    # print('lalalla')
+    # print(sid)
+    # print(env)
+    # print('!!!!!!',auth)
 
     # if auth:
     #     # token = auth["token"]
@@ -30,12 +30,12 @@ async def connect(sid, env, auth):
     # else:
     #     raise ConnectionRefusedError("No auth")
     book_id = 3
-    print("SocketIO connect")
+    # print("SocketIO connect")
     await sio.enter_room(sid, book_id)
     await sio.emit("connected", f"Connected as {sid}")
 
 def store_comment(data):
-    print(data)
+    # print(data)
     data = json.loads(data)
     user_id = data["user_id"]
     book_id = data["book_id"]

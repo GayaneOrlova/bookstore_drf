@@ -2,6 +2,9 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import ChangePasswordView
 from users import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 app_name = "users"
 
@@ -18,5 +21,4 @@ urlpatterns = [
     path("avatar/", views.UserAvatarAPIView.as_view(), name="user_avatar"),   
     
     path("tokens/", views.UserTokensFirebase.as_view(), name="user_tokens_firebase"),
-
-]
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
